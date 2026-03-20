@@ -530,75 +530,122 @@ const CodeEntryScreen = ({ onNext, onBack, phoneNumber }) => {
 // ============================================
 // SCREEN: Payment Method Selection
 // ============================================
-const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <ProgressTracker title="Cash to Close" progress={20} onBack={onBack} />
-    <div style={{ padding: '75px 32px 120px' }}>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Choose payment method</p>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>Select how you'd like to pay your Cash to Close.</p>
+const DIGITAL_FEE = 48;
+const WIRE_FEE = 40;
 
-      {/* Digital Payment */}
-      <div onClick={() => setSelectedMethod('digital')} style={{
-        padding: '20px', borderRadius: '12px', marginBottom: '16px', cursor: 'pointer', position: 'relative',
-        border: `2px solid ${selectedMethod === 'digital' ? colors.blue : colors.grey}`,
-        background: selectedMethod === 'digital' ? colors.lightestBlue : colors.white,
-      }}>
-        {selectedMethod === 'digital' && (
-          <div style={{ position: 'absolute', top: '16px', right: '16px', width: '24px', height: '24px', borderRadius: '50%', background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
-          </div>
-        )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}><Badge variant="green">Recommended</Badge></div>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.darkBlue, margin: '8px 0 4px' }}>Digital Payment via CertifID</p>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', color: colors.blue, margin: '0 0 12px' }}>$48 transfer fee</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {[
-            `Guaranteed arrival by ${requestData.deliveryDate}`,
-            'Secure online payment — no bank visit needed',
-            'Fully insured payment',
-            'Reduces wire fraud risk',
-          ].map((text, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px', flexShrink: 0 }}><path d="M20 6L9 17L4 12" stroke={colors.darkGreen} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>{text}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Wire Transfer */}
-      <div onClick={() => setSelectedMethod('wire')} style={{
-        padding: '20px', borderRadius: '12px', marginBottom: '24px', cursor: 'pointer', position: 'relative',
-        border: `2px solid ${selectedMethod === 'wire' ? colors.blue : colors.grey}`,
-        background: selectedMethod === 'wire' ? colors.lightestBlue : colors.white,
-      }}>
-        {selectedMethod === 'wire' && (
-          <div style={{ position: 'absolute', top: '16px', right: '16px', width: '24px', height: '24px', borderRadius: '50%', background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
-          </div>
-        )}
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.darkBlue, margin: '0 0 4px' }}>Wire Transfer</p>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', color: colors.mediumEmphasis, margin: '0 0 12px' }}>~$35 typical fee</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {['Download wire instructions', 'Visit bank or use online banking', 'Same/next day arrival typical'].map((text, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-              <span style={{ color: colors.mediumEmphasis, fontSize: '14px' }}>•</span>
-              <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>{text}</span>
-            </div>
-          ))}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginTop: '1px', flexShrink: 0 }}><path d="M12 9V13M12 17H12.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke={colors.orange} strokeWidth="2" strokeLinecap="round"/></svg>
-            <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>Must verify instructions carefully</span>
-          </div>
-        </div>
-      </div>
-
-      <PrimaryButton onClick={onNext} disabled={!selectedMethod}>
-        {selectedMethod === 'wire' ? 'Get Wire Instructions' : 'Continue with Digital Payment'}
-      </PrimaryButton>
-    </div>
-  </div>
+const ShieldCheck = ({ size = 18, color = colors.darkGreen }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill={color}/>
+    <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
 );
+
+const CalendarCheck = ({ size = 18, color = colors.blue }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+    <rect x="3" y="4" width="18" height="18" rx="2" stroke={color} strokeWidth="2"/>
+    <path d="M16 2V6M8 2V6M3 10H21" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <path d="M9 16L11 18L15 14" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const DirectConnectionIcon = ({ size = 18, color = colors.blue }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke={color} strokeWidth="2"/>
+    <path d="M9 12l2 2 4-4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod }) => {
+  const delta = DIGITAL_FEE - WIRE_FEE;
+  return (
+    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <ProgressTracker title="Cash to Close" progress={20} onBack={onBack} />
+      <div style={{ padding: '75px 32px 120px' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '24px' }}>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>
+            Choose payment method
+          </p>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.6, color: colors.mediumEmphasis, margin: 0 }}>
+            Select how you'd like to pay your Cash to Close.
+          </p>
+        </div>
+
+        {/* Digital Payment */}
+        <div onClick={() => setSelectedMethod('digital')} style={{
+          borderRadius: '12px', marginBottom: '16px', cursor: 'pointer', overflow: 'hidden', position: 'relative',
+          border: `2px solid ${selectedMethod === 'digital' ? colors.blue : colors.grey}`,
+        }}>
+          {selectedMethod === 'digital' && (
+            <div style={{ position: 'absolute', top: '16px', right: '16px', width: '24px', height: '24px', borderRadius: '50%', background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
+            </div>
+          )}
+          {/* Dark header */}
+          <div style={{ background: colors.darkBlue, padding: '20px 20px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <Badge variant="green">Recommended</Badge>
+            </div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.white, margin: '0 0 4px' }}>Pay digitally</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+              No numbers to enter. No instructions to verify.
+            </p>
+          </div>
+          {/* Light body */}
+          <div style={{ padding: '16px 20px 20px', background: selectedMethod === 'digital' ? colors.lightestBlue : colors.white }}>
+            {[
+              { icon: <ShieldCheck />, label: 'Fully insured', desc: 'Full amount protected if anything goes wrong' },
+              { icon: <CalendarCheck />, label: `Arrives ${requestData.deliveryDate}`, desc: `Guaranteed by ${requestData.deliveryTime}` },
+              { icon: <DirectConnectionIcon />, label: 'Direct connection', desc: `Funds go straight to ${requestData.titleCompany}` },
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: i < 2 ? '12px' : 0 }}>
+                <div style={{ marginTop: '2px' }}>{item.icon}</div>
+                <div>
+                  <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>{item.label}</p>
+                  <p style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+            <div style={{ height: '1px', background: colors.grey, margin: '16px 0 12px' }} />
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.blue }}>${DIGITAL_FEE}</span>
+                <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, marginLeft: '6px' }}>flat fee</span>
+              </div>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.lowEmphasis }}>${delta} more than wire</span>
+            </div>
+            <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.blue, margin: '4px 0 0' }}>Same price no matter the amount</p>
+          </div>
+        </div>
+
+        {/* Wire Transfer */}
+        <div onClick={() => setSelectedMethod('wire')} style={{
+          padding: '20px', borderRadius: '12px', marginBottom: '24px', cursor: 'pointer', position: 'relative',
+          border: `2px solid ${selectedMethod === 'wire' ? colors.blue : colors.grey}`,
+          background: selectedMethod === 'wire' ? colors.lightestBlue : colors.white,
+        }}>
+          {selectedMethod === 'wire' && (
+            <div style={{ position: 'absolute', top: '16px', right: '16px', width: '24px', height: '24px', borderRadius: '50%', background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
+            </div>
+          )}
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.darkBlue, margin: '0 0 4px' }}>Download wire instructions</p>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', margin: '0 0 8px' }}>
+            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>~${WIRE_FEE}</span>
+            <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis }}>typical fee paid through your bank</span>
+          </div>
+          <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, margin: 0, lineHeight: 1.5 }}>
+            You'll download verified wire instructions. You enter the details at your bank and verify everything manually.
+          </p>
+        </div>
+
+        <PrimaryButton onClick={onNext} disabled={!selectedMethod}>
+          {selectedMethod === 'wire' ? 'Get Wire Instructions' : 'Continue with Digital Payment'}
+        </PrimaryButton>
+      </div>
+    </div>
+  );
+};
 
 // ============================================
 // SCREEN: KYC - Identity Verification (New Users)
@@ -943,7 +990,7 @@ const CutoffAlertScreen = ({ onAccept, onWire, onBack }) => (
       <Badge variant="orange">Delivery date changed</Badge>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', color: colors.darkBlue, margin: '12px 0 8px' }}>Your delivery date has been updated</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.mediumEmphasis, margin: '0 0 24px', lineHeight: 1.5 }}>
-        Your session crossed the 3:00 PM ET processing cutoff.
+        Payments submitted after 3:00 PM ET arrive the next business day.
       </p>
       <div style={{ background: colors.lightestGrey, borderRadius: '8px', padding: '16px', marginBottom: '16px', textAlign: 'left' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -1194,7 +1241,7 @@ const CashToClosePrototype = () => {
   // Screen definitions for navigation
   const screenGroups = {
     'Entry': [
-      { id: 'intent', label: 'Payment Intent', note: 'Buyer-initiated only' },
+      { id: 'intent', label: 'Payment Intent', note: 'Buyer-initiated only', disabled: true },
       { id: 'landing', label: 'Landing Page' },
     ],
     'Verification': [
@@ -1287,9 +1334,11 @@ const CashToClosePrototype = () => {
           <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '11px', color: colors.lowEmphasis, textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 8px' }}>Configuration</p>
           <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
             {['title', 'buyer'].map(path => (
-              <button key={path} onClick={() => { setEntryPath(path); setCurrentScreen(path === 'buyer' ? 'intent' : 'landing'); }}
+              <button key={path} onClick={() => { if (path === 'buyer') return; setEntryPath(path); setCurrentScreen('landing'); }}
+                disabled={path === 'buyer'}
                 style={{
-                  flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                  flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '12px', fontWeight: 600,
+                  cursor: path === 'buyer' ? 'not-allowed' : 'pointer', opacity: path === 'buyer' ? 0.4 : 1,
                   background: entryPath === path ? colors.blue : colors.white, color: entryPath === path ? colors.white : colors.mediumEmphasis,
                 }}>
                 {path === 'title' ? 'Title-Initiated' : 'Buyer-Initiated'}
@@ -1315,9 +1364,11 @@ const CashToClosePrototype = () => {
             <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '11px', color: colors.lowEmphasis, textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 6px' }}>{group}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
               {screens.map(screen => (
-                <button key={screen.id} onClick={() => setCurrentScreen(screen.id)}
+                <button key={screen.id} onClick={() => { if (!screen.disabled) setCurrentScreen(screen.id); }}
+                  disabled={screen.disabled}
                   style={{
-                    padding: '8px 10px', borderRadius: '6px', border: 'none', textAlign: 'left', cursor: 'pointer',
+                    padding: '8px 10px', borderRadius: '6px', border: 'none', textAlign: 'left',
+                    cursor: screen.disabled ? 'not-allowed' : 'pointer', opacity: screen.disabled ? 0.4 : 1,
                     background: currentScreen === screen.id ? (group === 'Errors' ? colors.lightRed : colors.lightestBlue) : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   }}>
@@ -1343,14 +1394,20 @@ const CashToClosePrototype = () => {
         </div>
       </div>
 
-      {/* Right: Phone */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <PhoneContainer>
-          {renderScreen()}
-        </PhoneContainer>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 600, fontSize: '14px', color: colors.mediumEmphasis, marginTop: '16px', textAlign: 'center' }}>
-          {currentScreen.replace('err-', 'Error: ').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-        </p>
+      {/* Right: Phone (sticky so it stays centered while sidebar scrolls) */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+        <div style={{
+          position: 'sticky',
+          top: 'max(16px, calc(50vh - 450px))',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', alignSelf: 'flex-start',
+        }}>
+          <PhoneContainer>
+            {renderScreen()}
+          </PhoneContainer>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 600, fontSize: '14px', color: colors.mediumEmphasis, marginTop: '16px', textAlign: 'center' }}>
+            {currentScreen.replace('err-', 'Error: ').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          </p>
+        </div>
       </div>
 
       <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
