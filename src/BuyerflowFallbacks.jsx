@@ -49,7 +49,7 @@ const requestData = {
   buyerName: 'Sarah Johnson',
   buyerPhone: '(512) 555-0147',
   deliveryDate: 'Monday, February 2, 2026',
-  deliveryTime: '10:00 AM',
+  deliveryTime: '9:00 AM',
   hasExistingBank: true,
   existingBank: {
     name: 'Chase',
@@ -531,7 +531,7 @@ const CodeEntryScreen = ({ onNext, onBack, phoneNumber }) => {
 // SCREEN: Payment Method Selection
 // ============================================
 const DIGITAL_FEE = 48;
-const WIRE_FEE = 40;
+const WIRE_FEE = 35;
 
 const ShieldCheck = ({ size = 18, color = colors.darkGreen }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
@@ -634,9 +634,15 @@ const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod
             <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>~${WIRE_FEE}</span>
             <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis }}>typical fee paid through your bank</span>
           </div>
-          <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, margin: '0 0 12px', lineHeight: 1.5 }}>
             You'll download verified wire instructions. You enter the details at your bank and verify everything manually.
           </p>
+          <div style={{ background: colors.lightestGrey, borderRadius: '6px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '12px', color: colors.highEmphasis, margin: 0 }}>+ Optional wire insurance</p>
+              <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>Total with coverage: ~${WIRE_FEE + 48}</p>
+            </div>
+          </div>
         </div>
 
         <PrimaryButton onClick={onNext} disabled={!selectedMethod}>
@@ -995,17 +1001,16 @@ const CutoffAlertScreen = ({ onAccept, onWire, onBack }) => (
       <div style={{ background: colors.lightestGrey, borderRadius: '8px', padding: '16px', marginBottom: '16px', textAlign: 'left' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
           <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>Was</span>
-          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.lowEmphasis, textDecoration: 'line-through' }}>Mon, Feb 2 by 10:00 AM</span>
+          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.lowEmphasis, textDecoration: 'line-through' }}>Mon, Feb 2 by 9:00 AM</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>Now</span>
-          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.blue }}>Tue, Feb 3 by 10:00 AM</span>
+          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.blue }}>Tue, Feb 3 by 9:00 AM</span>
         </div>
       </div>
       <InfoBox>Your closing is on {requestData.closingDate}. The updated delivery still arrives before closing.</InfoBox>
       <PrimaryButton onClick={onAccept}>Accept New Delivery Date</PrimaryButton>
-      <div style={{ marginTop: '12px' }}><SecondaryButton onClick={() => {}}>Come Back Tomorrow</SecondaryButton></div>
-      <TextLink onClick={onWire}>Use wire instructions instead</TextLink>
+      <div style={{ marginTop: '12px' }}><SecondaryButton onClick={onWire}>Use wire instructions instead</SecondaryButton></div>
     </div>
   </div>
 );
@@ -1221,7 +1226,6 @@ const WireInstructionsScreen = ({ onBack, onGoDigital }) => (
         ))}
       </div>
       <PrimaryButton onClick={() => {}}>Download Instructions (PDF)</PrimaryButton>
-      <div style={{ marginTop: '12px' }}><SecondaryButton onClick={() => {}}>Copy to Clipboard</SecondaryButton></div>
       {onGoDigital && <TextLink onClick={onGoDigital}>Go back and pay digitally instead</TextLink>}
     </div>
   </div>
@@ -1274,7 +1278,6 @@ const CashToClosePrototype = () => {
       { id: 'err-limit', label: 'Over Limit' },
       { id: 'err-funds', label: 'Insufficient Funds' },
       { id: 'err-balance', label: 'Balance Unavailable' },
-      { id: 'err-payment', label: 'Payment Failed' },
     ],
   };
 
@@ -1311,7 +1314,6 @@ const CashToClosePrototype = () => {
       case 'err-limit': return <OverTransferLimitScreen onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('method')} />;
       case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('bank-select')} />;
       case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('bank-select')} />;
-      case 'err-payment': return <PaymentFailedScreen onRetry={() => setCurrentScreen('review')} onDifferentAccount={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('review')} />;
       default: return <PaymentRequestScreen onNext={() => setCurrentScreen('phone')} />;
     }
   };
