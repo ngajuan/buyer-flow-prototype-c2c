@@ -1190,6 +1190,189 @@ const SuccessWithShareScreen = ({ onClose }) => {
 };
 
 // ============================================
+// SCREEN: Review Wire Instructions
+// ============================================
+const ReviewWireScreen = ({ onNext, onBack }) => {
+  const [protectionOn, setProtectionOn] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
+
+  return (
+    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <div style={{ padding: '24px 32px 120px' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: 0 }}>Review Wire Instructions</p>
+          <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', fontSize: '24px', color: colors.mediumEmphasis, lineHeight: 1 }}>×</button>
+        </div>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
+          Review and acknowledge the verified wire instructions for sending your funds to the...
+        </p>
+
+        {/* Secure Wire Instructions Info */}
+        <div style={{
+          background: colors.lightestBlue, borderRadius: '10px', padding: '16px', marginBottom: '20px',
+          border: `1px solid ${colors.lighterBlue}`, display: 'flex', gap: '12px', alignItems: 'flex-start',
+        }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: '2px' }}>
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke={colors.blue} strokeWidth="2"/>
+            <path d="M9 12l2 2 4-4" stroke={colors.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.darkBlue, margin: '0 0 4px' }}>Secure Wire Instructions</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: 0 }}>
+              Wire instructions will never be shared over email or text. They will only appear in this secure experience.
+            </p>
+          </div>
+        </div>
+
+        {/* Verified Wire Instructions */}
+        <div style={{ background: colors.lightestGrey, borderRadius: '10px', padding: '20px', marginBottom: '20px', border: `1px solid ${colors.grey}` }}>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '15px', color: colors.darkBlue, margin: '0 0 4px' }}>Verified Wire Instructions</p>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', color: colors.mediumEmphasis, margin: '0 0 16px' }}>
+            Use these instructions to send your funds securely
+          </p>
+          {[
+            { label: 'Bank Name:', value: 'First National Bank' },
+            { label: 'Routing Number:', value: '021000821' },
+            { label: 'Account Number:', value: '****4589' },
+            { label: 'Account Name:', value: 'Pinpoint Title Escrow' },
+            { label: 'Reference:', value: 'File #3abacc6f' },
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: i < 4 ? '8px' : 0 }}>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', color: colors.mediumEmphasis }}>{item.label}</span>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis }}>{item.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Money Protection Plan */}
+        <div style={{
+          background: protectionOn ? colors.lightestBlue : colors.lightestGrey,
+          borderRadius: '10px', padding: '20px', marginBottom: '24px',
+          border: `1px solid ${protectionOn ? colors.lighterBlue : colors.grey}`,
+          transition: 'all 0.2s ease',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke={colors.darkBlue} strokeWidth="2"/>
+                <path d="M12 8V12M12 16H12.01" stroke={colors.darkBlue} strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '15px', color: colors.darkBlue, margin: 0 }}>Money Protection Plan</p>
+            </div>
+            {/* Toggle */}
+            <div onClick={() => setProtectionOn(!protectionOn)} style={{
+              width: '48px', height: '28px', borderRadius: '14px', padding: '2px', cursor: 'pointer',
+              background: protectionOn ? colors.darkBlue : colors.darkGrey, transition: 'background 0.2s ease',
+              display: 'flex', alignItems: 'center',
+            }}>
+              <div style={{
+                width: '24px', height: '24px', borderRadius: '50%', background: colors.white,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 0.2s ease',
+                transform: protectionOn ? 'translateX(20px)' : 'translateX(0)',
+              }} />
+            </div>
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', padding: '3px 8px', borderRadius: '4px', background: colors.darkGreen, marginBottom: '8px' }}>
+            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '10px', color: colors.white, textTransform: 'uppercase' }}>Optional</span>
+          </div>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', lineHeight: 1.6, color: colors.mediumEmphasis, margin: '0 0 12px' }}>
+            Protect your wire transfer with fraud recovery coverage, underwritten by Lloyd's of London.
+          </p>
+          {[
+            'Dedicated fraud recovery experts',
+            '24/7 crisis hotline',
+            'Bank notification to freeze compromised accounts',
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <path d="M20 6L9 17L4 12" stroke={colors.darkGreen} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.highEmphasis, lineHeight: 1.5 }}>{item}</span>
+            </div>
+          ))}
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.darkBlue, margin: '16px 0 2px' }}>$50 <span style={{ fontWeight: 400, fontSize: '13px', color: colors.mediumEmphasis }}>one-time fee</span></p>
+          <p onClick={() => {}} style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', color: colors.blue, margin: 0, cursor: 'pointer', textDecoration: 'underline' }}>Learn More</p>
+        </div>
+
+        {/* Acknowledgment Checkbox */}
+        <div style={{ marginBottom: '24px' }}>
+          <Checkbox
+            checked={acknowledged}
+            onChange={setAcknowledged}
+            label="I understand that these wire instructions are only provided through this secure experience and will never be sent via email or text."
+          />
+        </div>
+
+        {/* CTA */}
+        <PrimaryButton
+          onClick={() => onNext(protectionOn)}
+          disabled={!acknowledged}
+        >
+          I've reviewed and verified
+        </PrimaryButton>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// SCREEN: Wire Protection Payment
+// ============================================
+const WireProtectionPaymentScreen = ({ onNext, onBack }) => (
+  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    {/* Header with logo and progress */}
+    <div style={{ position: 'absolute', top: '65px', left: 0, right: 0, background: colors.white, zIndex: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px', height: '52px' }}>
+        <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: colors.lightestGrey, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} onClick={onBack}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div style={{ width: '24px', height: '24px', background: colors.blue, borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/><path d="M12 2L12 6M12 18L12 22M2 12L6 12M18 12L22 12" stroke="white" strokeWidth="2"/></svg>
+          </div>
+          <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '2px', color: '#3B3B49' }}>PINPOINT</span>
+        </div>
+        <div style={{ width: '38px' }} />
+      </div>
+      <div style={{ height: '4px', background: colors.grey, width: '100%' }}>
+        <div style={{ height: '100%', width: '50%', background: colors.blue, borderRadius: '0 3px 3px 0' }} />
+      </div>
+    </div>
+
+    <div style={{ padding: '85px 32px 120px' }}>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Complete payment</p>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
+        Please enter your card details.
+      </p>
+
+      {/* Card Details Form */}
+      <div style={{ background: colors.lightestGrey, borderRadius: '10px', padding: '20px', marginBottom: '24px', border: `1px solid ${colors.grey}` }}>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 12px' }}>Card details</p>
+        <input type="text" placeholder="XXXX-XXXX-XXXX-XXXX  MM/YY  CVC" readOnly style={{
+          width: '100%', height: '40px', padding: '8px 12px', borderRadius: '6px',
+          border: `1px solid ${colors.darkGrey}`, background: colors.white,
+          fontFamily: fonts.oxygen, fontSize: '14px', color: colors.lowEmphasis,
+          boxSizing: 'border-box', marginBottom: '16px', outline: 'none',
+        }} />
+        <TextField label="Name" placeholder="" value="" onChange={() => {}} />
+        <TextField label="Billing address" placeholder="" value="" onChange={() => {}} />
+        <TextField label="City" placeholder="" value="" onChange={() => {}} />
+        <div style={{ display: 'flex', gap: '12px', width: '326px' }}>
+          <div style={{ flex: 1 }}><TextField label="State" placeholder="" value="" onChange={() => {}} /></div>
+          <div style={{ flex: 1 }}><TextField label="Zip code" placeholder="" value="" onChange={() => {}} /></div>
+        </div>
+      </div>
+
+      <PrimaryButton onClick={onNext}>Pay $50</PrimaryButton>
+      <div style={{ marginTop: '12px' }}>
+        <SecondaryButton onClick={onBack}>Cancel</SecondaryButton>
+      </div>
+    </div>
+  </div>
+);
+
+// ============================================
 // SCREEN: Wire Instructions
 // ============================================
 const WireInstructionsScreen = ({ onBack, onGoDigital }) => (
@@ -1268,6 +1451,8 @@ const CashToClosePrototype = () => {
       { id: 'success-share', label: 'Share Modal' },
     ],
     'Wire': [
+      { id: 'wire-review', label: 'Review Wire' },
+      { id: 'wire-protection-pay', label: 'Protection Payment' },
       { id: 'wire', label: 'Wire Instructions' },
     ],
     'Errors': [
@@ -1289,7 +1474,7 @@ const CashToClosePrototype = () => {
       case 'code': return <CodeEntryScreen onNext={() => setCurrentScreen('method')} onBack={() => setCurrentScreen('phone')} phoneNumber={requestData.buyerPhone} />;
       case 'method': return <PaymentMethodScreen
         onNext={() => {
-          if (selectedMethod === 'wire') setCurrentScreen('wire');
+          if (selectedMethod === 'wire') setCurrentScreen('wire-review');
           else if (userType === 'new') setCurrentScreen('kyc');
           else setCurrentScreen('bank-select');
         }}
@@ -1301,19 +1486,27 @@ const CashToClosePrototype = () => {
       case 'plaid': return <PlaidBankConnectionScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('kyc')} />;
       case 'bank-select': return <BankAccountScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('method')} useExisting={useExistingBank} setUseExisting={setUseExistingBank} />;
       case 'eligibility': return <EligibilityCheckScreen onNext={() => setCurrentScreen('review')} />;
-      case 'cutoff': return <CutoffAlertScreen onAccept={() => setCurrentScreen('review')} onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('review')} />;
+      case 'cutoff': return <CutoffAlertScreen onAccept={() => setCurrentScreen('review')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('review')} />;
       case 'review': return <ReviewPaymentScreen onNext={() => setCurrentScreen('processing')} onBack={() => setCurrentScreen(userType === 'new' ? 'plaid' : 'bank-select')} checkboxChecked={checkboxChecked} setCheckboxChecked={setCheckboxChecked} />;
       case 'processing': return <ProcessingScreen onNext={() => setCurrentScreen('success')} />;
       case 'success': return <SuccessScreen onShowShare={() => setCurrentScreen('success-share')} />;
       case 'success-share': return <SuccessWithShareScreen onClose={() => setCurrentScreen('success')} />;
-      case 'wire': return <WireInstructionsScreen onBack={() => setCurrentScreen('method')} onGoDigital={() => setCurrentScreen('method')} />;
-      case 'err-kyc': return <KYCFailedScreen onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('kyc')} />;
-      case 'err-plaid': return <PlaidFailedScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('kyc')} />;
-      case 'err-savings': return <SavingsAccountScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('plaid')} />;
-      case 'err-closing': return <ClosingTooSoonScreen onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('method')} />;
-      case 'err-limit': return <OverTransferLimitScreen onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('method')} />;
-      case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('bank-select')} />;
-      case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('bank-select')} />;
+      case 'wire-review': return <ReviewWireScreen
+        onNext={(hasProtection) => {
+          if (hasProtection) setCurrentScreen('wire-protection-pay');
+          else setCurrentScreen('wire');
+        }}
+        onBack={() => setCurrentScreen('method')}
+      />;
+      case 'wire-protection-pay': return <WireProtectionPaymentScreen onNext={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('wire-review')} />;
+      case 'wire': return <WireInstructionsScreen onBack={() => setCurrentScreen('wire-review')} onGoDigital={() => setCurrentScreen('method')} />;
+      case 'err-kyc': return <KYCFailedScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} />;
+      case 'err-plaid': return <PlaidFailedScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} />;
+      case 'err-savings': return <SavingsAccountScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('plaid')} />;
+      case 'err-closing': return <ClosingTooSoonScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} />;
+      case 'err-limit': return <OverTransferLimitScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} />;
+      case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
+      case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
       default: return <PaymentRequestScreen onNext={() => setCurrentScreen('phone')} />;
     }
   };
