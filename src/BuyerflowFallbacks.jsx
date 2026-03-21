@@ -1198,12 +1198,9 @@ const ReviewWireScreen = ({ onNext, onBack }) => {
 
   return (
     <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-      <div style={{ padding: '24px 32px 120px' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: 0 }}>Review Wire Instructions</p>
-          <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', fontSize: '24px', color: colors.mediumEmphasis, lineHeight: 1 }}>×</button>
-        </div>
+      <ProgressTracker title="Cash to Close" progress={30} onBack={onBack} />
+      <div style={{ padding: '75px 32px 120px' }}>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Review Wire Instructions</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
           Review and acknowledge the verified wire instructions for sending your funds to the...
         </p>
@@ -1321,26 +1318,8 @@ const ReviewWireScreen = ({ onNext, onBack }) => {
 // ============================================
 const WireProtectionPaymentScreen = ({ onNext, onBack }) => (
   <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    {/* Header with logo and progress */}
-    <div style={{ position: 'absolute', top: '65px', left: 0, right: 0, background: colors.white, zIndex: 5 }}>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px', height: '52px' }}>
-        <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: colors.lightestGrey, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} onClick={onBack}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-          <div style={{ width: '24px', height: '24px', background: colors.blue, borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/><path d="M12 2L12 6M12 18L12 22M2 12L6 12M18 12L22 12" stroke="white" strokeWidth="2"/></svg>
-          </div>
-          <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '2px', color: '#3B3B49' }}>PINPOINT</span>
-        </div>
-        <div style={{ width: '38px' }} />
-      </div>
-      <div style={{ height: '4px', background: colors.grey, width: '100%' }}>
-        <div style={{ height: '100%', width: '50%', background: colors.blue, borderRadius: '0 3px 3px 0' }} />
-      </div>
-    </div>
-
-    <div style={{ padding: '85px 32px 120px' }}>
+    <ProgressTracker title="Cash to Close" progress={45} onBack={onBack} />
+    <div style={{ padding: '75px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Complete payment</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
         Please enter your card details.
