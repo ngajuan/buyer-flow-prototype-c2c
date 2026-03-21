@@ -1326,10 +1326,10 @@ const WireProtectionPaymentScreen = ({ onNext, onBack }) => (
       </p>
 
       {/* Card Details Form */}
-      <div style={{ background: colors.lightestGrey, borderRadius: '10px', padding: '20px', marginBottom: '24px', border: `1px solid ${colors.grey}` }}>
+      <div style={{ marginBottom: '24px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 12px' }}>Card details</p>
         <input type="text" placeholder="XXXX-XXXX-XXXX-XXXX  MM/YY  CVC" readOnly style={{
-          width: '100%', height: '40px', padding: '8px 12px', borderRadius: '6px',
+          width: '326px', height: '40px', padding: '8px 12px', borderRadius: '6px',
           border: `1px solid ${colors.darkGrey}`, background: colors.white,
           fontFamily: fonts.oxygen, fontSize: '14px', color: colors.lowEmphasis,
           boxSizing: 'border-box', marginBottom: '16px', outline: 'none',
@@ -1435,11 +1435,9 @@ const CashToClosePrototype = () => {
       { id: 'wire', label: 'Wire Instructions' },
     ],
     'Errors': [
-      { id: 'err-kyc', label: 'KYC Failed' },
       { id: 'err-plaid', label: 'Plaid Failed' },
       { id: 'err-savings', label: 'Savings Account' },
       { id: 'err-closing', label: 'Closing Too Soon' },
-      { id: 'err-limit', label: 'Over Limit' },
       { id: 'err-funds', label: 'Insufficient Funds' },
       { id: 'err-balance', label: 'Balance Unavailable' },
     ],
@@ -1479,11 +1477,9 @@ const CashToClosePrototype = () => {
       />;
       case 'wire-protection-pay': return <WireProtectionPaymentScreen onNext={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('wire-review')} />;
       case 'wire': return <WireInstructionsScreen onBack={() => setCurrentScreen('wire-review')} onGoDigital={() => setCurrentScreen('method')} />;
-      case 'err-kyc': return <KYCFailedScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} />;
       case 'err-plaid': return <PlaidFailedScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} />;
       case 'err-savings': return <SavingsAccountScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('plaid')} />;
       case 'err-closing': return <ClosingTooSoonScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} />;
-      case 'err-limit': return <OverTransferLimitScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} />;
       case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
       case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
       default: return <PaymentRequestScreen onNext={() => setCurrentScreen('phone')} />;
