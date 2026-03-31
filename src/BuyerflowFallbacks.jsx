@@ -59,6 +59,13 @@ const requestData = {
   },
 };
 
+// Mask phone number to show only last 4 digits
+const maskPhone = (phone) => {
+  const digits = phone.replace(/\D/g, '');
+  const last4 = digits.slice(-4);
+  return `(***) ***-${last4}`;
+};
+
 // ============================================
 // Shared Components
 // ============================================
@@ -491,7 +498,7 @@ const PhoneVerifyScreen = ({ onNext, onBack, phoneNumber }) => (
       </p>
       <div style={{ padding: '16px', background: colors.lightestGrey, borderRadius: '8px', marginBottom: '24px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: 0 }}>Phone number on file</p>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.highEmphasis, margin: '4px 0 0' }}>{phoneNumber}</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.highEmphasis, margin: '4px 0 0' }}>{maskPhone(phoneNumber)}</p>
       </div>
       <PrimaryButton onClick={onNext}>Send Code</PrimaryButton>
       <TextLink onClick={() => {}}>Use a different phone number</TextLink>
@@ -510,7 +517,7 @@ const CodeEntryScreen = ({ onNext, onBack, phoneNumber }) => {
         <BackButton onClick={onBack} />
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.5, color: colors.darkBlue, margin: '16px 0' }}>Enter verification code</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: 0 }}>Enter the code we sent to</p>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 24px' }}>{phoneNumber}</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 24px' }}>{maskPhone(phoneNumber)}</p>
         <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
           {code.map((digit, i) => (
             <div key={i} style={{
@@ -521,6 +528,8 @@ const CodeEntryScreen = ({ onNext, onBack, phoneNumber }) => {
           ))}
         </div>
         <TextLink onClick={() => {}}>Resend code</TextLink>
+        <SecondaryButton onClick={() => {}}>Receive a Call Instead</SecondaryButton>
+        <div style={{ marginTop: '12px' }} />
         <PrimaryButton onClick={onNext}>Continue</PrimaryButton>
       </div>
     </div>
@@ -1397,7 +1406,7 @@ const WireInstructionsScreen = ({ onBack, onGoDigital }) => (
 // Main App Component
 // ============================================
 const CashToClosePrototype = () => {
-  const [currentScreen, setCurrentScreen] = useState('landing');
+  const [currentScreen, setCurrentScreen] = useState('phone');
   const [entryPath, setEntryPath] = useState('title'); // 'title' or 'buyer'
   const [userType, setUserType] = useState('returning'); // 'new' or 'returning'
   const [selectedMethod, setSelectedMethod] = useState('digital');
@@ -1406,13 +1415,13 @@ const CashToClosePrototype = () => {
 
   // Screen definitions for navigation
   const screenGroups = {
-    'Entry': [
-      { id: 'intent', label: 'Payment Intent', note: 'Buyer-initiated only', disabled: true },
-      { id: 'landing', label: 'Landing Page' },
-    ],
     'Verification': [
       { id: 'phone', label: 'Phone Verify' },
       { id: 'code', label: 'Code Entry' },
+    ],
+    'Entry': [
+      { id: 'intent', label: 'Payment Intent', note: 'Buyer-initiated only', disabled: true },
+      { id: 'landing', label: 'Landing Page' },
     ],
     'Digital Path': [
       { id: 'method', label: 'Payment Method' },
@@ -1446,16 +1455,16 @@ const CashToClosePrototype = () => {
   const renderScreen = () => {
     switch (currentScreen) {
       case 'intent': return <PaymentIntentScreen onNext={() => setCurrentScreen('landing')} onBack={() => {}} />;
-      case 'landing': return <PaymentRequestScreen onNext={() => setCurrentScreen('phone')} />;
-      case 'phone': return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => setCurrentScreen(entryPath === 'buyer' ? 'intent' : 'landing')} phoneNumber={requestData.buyerPhone} />;
-      case 'code': return <CodeEntryScreen onNext={() => setCurrentScreen('method')} onBack={() => setCurrentScreen('phone')} phoneNumber={requestData.buyerPhone} />;
+      case 'phone': return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} />;
+      case 'code': return <CodeEntryScreen onNext={() => setCurrentScreen('landing')} onBack={() => setCurrentScreen('phone')} phoneNumber={requestData.buyerPhone} />;
+      case 'landing': return <PaymentRequestScreen onNext={() => setCurrentScreen('method')} />;
       case 'method': return <PaymentMethodScreen
         onNext={() => {
           if (selectedMethod === 'wire') setCurrentScreen('wire-review');
           else if (userType === 'new') setCurrentScreen('kyc');
           else setCurrentScreen('bank-select');
         }}
-        onBack={() => setCurrentScreen('code')}
+        onBack={() => setCurrentScreen('landing')}
         selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod}
       />;
       case 'kyc': return <KYCScreen onNext={() => setCurrentScreen('kyc-verifying')} onBack={() => setCurrentScreen('method')} />;
@@ -1482,7 +1491,7 @@ const CashToClosePrototype = () => {
       case 'err-closing': return <ClosingTooSoonScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} />;
       case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
       case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
-      default: return <PaymentRequestScreen onNext={() => setCurrentScreen('phone')} />;
+      default: return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} />;
     }
   };
 
@@ -1504,7 +1513,7 @@ const CashToClosePrototype = () => {
           <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '11px', color: colors.lowEmphasis, textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 8px' }}>Configuration</p>
           <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
             {['title', 'buyer'].map(path => (
-              <button key={path} onClick={() => { if (path === 'buyer') return; setEntryPath(path); setCurrentScreen('landing'); }}
+              <button key={path} onClick={() => { if (path === 'buyer') return; setEntryPath(path); setCurrentScreen('phone'); }}
                 disabled={path === 'buyer'}
                 style={{
                   flex: 1, padding: '8px', borderRadius: '6px', border: 'none', fontSize: '12px', fontWeight: 600,
