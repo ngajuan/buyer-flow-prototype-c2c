@@ -225,8 +225,8 @@ const ProgressTracker = ({ title, progress, onBack }) => (
 );
 
 const Badge = ({ children, variant = 'blue' }) => {
-  const bgColor = variant === 'green' ? colors.lightGreen : variant === 'red' ? colors.lightRed : variant === 'orange' ? colors.lightOrange : colors.lightestBlue;
-  const textColor = variant === 'green' ? colors.darkGreen : variant === 'red' ? colors.red : variant === 'orange' ? '#92400E' : colors.blue;
+  const bgColor = variant === 'green' ? colors.lightGreen : variant === 'red' ? colors.lightRed : variant === 'orange' ? colors.lightOrange : variant === 'grey' ? colors.lightestGrey : colors.lightestBlue;
+  const textColor = variant === 'green' ? colors.darkGreen : variant === 'red' ? colors.red : variant === 'orange' ? '#92400E' : variant === 'grey' ? colors.lowEmphasis : colors.blue;
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '7.8px 13.7px', borderRadius: '16px', background: bgColor }}>
       <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '10.4px', lineHeight: 1.5, color: textColor, textTransform: 'uppercase' }}>{children}</span>
@@ -481,6 +481,145 @@ const PaymentRequestScreen = ({ onNext }) => (
         By continuing, you agree to our <span style={{ textDecoration: 'underline' }}>Terms of Use</span> and <span style={{ textDecoration: 'underline' }}>Privacy Policy</span>.
       </p>
       <CertifIDBranding />
+    </div>
+  </div>
+);
+
+// ============================================
+// SCREEN: Ineligible Landing Page (closing date too soon for digital)
+// ============================================
+const IneligibleLandingScreen = ({ onNext }) => (
+  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <TitleCompanyLogo />
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}><HouseWithClock /></div>
+    <div style={{ padding: '0 32px' }}>
+      <Badge>Cash to Close</Badge>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '32px', lineHeight: 1.2, color: colors.darkBlue, margin: '12px 0 8px' }}>
+        ${requestData.paymentAmount.toLocaleString()}.00
+      </p>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 20px' }}>
+        {requestData.titleCompany} has requested your Cash to Close payment for:
+      </p>
+      <div style={{ background: colors.lightestGrey, borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px' }}><path d="M3 9L12 2L21 9V20C21 21.1 20.1 22 19 22H5C3.9 22 3 21.1 3 20V9Z" stroke={colors.mediumEmphasis} strokeWidth="2"/><path d="M9 22V12H15V22" stroke={colors.mediumEmphasis} strokeWidth="2"/></svg>
+          <div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>Property</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>{requestData.propertyAddress}</p>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px' }}><rect x="3" y="4" width="18" height="18" rx="2" stroke={colors.mediumEmphasis} strokeWidth="2"/><path d="M16 2V6M8 2V6M3 10H21" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round"/></svg>
+          <div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>Closing</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>{requestData.closingDate} at {requestData.closingTime}</p>
+          </div>
+        </div>
+      </div>
+      <PrimaryButton onClick={onNext}>Continue to Payment</PrimaryButton>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '12px', lineHeight: 1.5, color: colors.mediumEmphasis, textAlign: 'center', margin: '24px 0' }}>
+        By continuing, you agree to our <span style={{ textDecoration: 'underline' }}>Terms of Use</span> and <span style={{ textDecoration: 'underline' }}>Privacy Policy</span>.
+      </p>
+      <CertifIDBranding />
+    </div>
+  </div>
+);
+
+// ============================================
+// SCREEN: Ineligible Payment Method (digital disabled)
+// ============================================
+const IneligiblePaymentMethodScreen = ({ onNext, onBack }) => (
+  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <ProgressTracker title="Cash to Close" progress={20} onBack={onBack} />
+    <div style={{ padding: '75px 32px 120px' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '24px' }}>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>
+          Choose payment method
+        </p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.6, color: colors.mediumEmphasis, margin: 0 }}>
+          Select how you'd like to pay your Cash to Close.
+        </p>
+      </div>
+
+      {/* Digital Payment — Disabled */}
+      <div style={{
+        borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', position: 'relative',
+        border: `2px solid ${colors.grey}`, opacity: 0.55, cursor: 'not-allowed',
+      }}>
+        {/* Dark header */}
+        <div style={{ background: colors.darkBlue, padding: '20px 20px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <Badge variant="grey">Unavailable</Badge>
+          </div>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.white, margin: '0 0 4px' }}>Pay digitally</p>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+            No numbers to enter. No instructions to verify.
+          </p>
+        </div>
+        {/* Light body */}
+        <div style={{ padding: '16px 20px 20px', background: colors.white }}>
+          {[
+            { icon: <ShieldCheck color={colors.lowEmphasis} />, label: 'Fully insured', desc: 'Full amount protected if anything goes wrong' },
+            { icon: <CalendarCheck color={colors.lowEmphasis} />, label: `Arrives ${requestData.deliveryDate}`, desc: `Guaranteed by ${requestData.deliveryTime}` },
+            { icon: <DirectConnectionIcon color={colors.lowEmphasis} />, label: 'Direct connection', desc: `Funds go straight to ${requestData.titleCompany}` },
+          ].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: i < 2 ? '12px' : 0 }}>
+              <div style={{ marginTop: '2px' }}>{item.icon}</div>
+              <div>
+                <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>{item.label}</p>
+                <p style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>{item.desc}</p>
+              </div>
+            </div>
+          ))}
+          <div style={{ height: '1px', background: colors.grey, margin: '16px 0 12px' }} />
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <div>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.lowEmphasis }}>${DIGITAL_FEE}</span>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis, marginLeft: '6px' }}>flat fee</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Ineligibility explanation */}
+      <div style={{
+        background: '#FEF3C7', borderRadius: '8px', padding: '14px 16px', marginBottom: '16px',
+        display: 'flex', alignItems: 'flex-start', gap: '10px', border: '1px solid #FDE68A',
+      }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: '1px' }}>
+          <path d="M12 9V13M12 17H12.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#D97706" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+        <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', lineHeight: 1.5, color: '#92400E', margin: 0 }}>
+          <strong>Your closing date is too soon for digital payment.</strong> Digital payments require at least 3 business days to process and arrive before closing. Wire transfer is available as an alternative.
+        </p>
+      </div>
+
+      {/* Wire Transfer — Pre-selected */}
+      <div style={{
+        padding: '20px', borderRadius: '12px', marginBottom: '24px', position: 'relative',
+        border: `2px solid ${colors.blue}`, background: colors.lightestBlue,
+      }}>
+        <div style={{ position: 'absolute', top: '16px', right: '16px', width: '24px', height: '24px', borderRadius: '50%', background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
+        </div>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.darkBlue, margin: '0 0 4px' }}>Download wire instructions</p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', margin: '0 0 8px' }}>
+          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>~${WIRE_FEE}</span>
+          <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis }}>typical fee paid through your bank</span>
+        </div>
+        <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, margin: '0 0 12px', lineHeight: 1.5 }}>
+          You'll download verified wire instructions. You enter the details at your bank and verify everything manually.
+        </p>
+        <div style={{ background: colors.lightestGrey, borderRadius: '6px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '12px', color: colors.highEmphasis, margin: 0 }}>+ Optional wire insurance</p>
+            <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>Total with coverage: ~${WIRE_FEE + 48}</p>
+          </div>
+        </div>
+      </div>
+
+      <PrimaryButton onClick={onNext}>Get Wire Instructions</PrimaryButton>
     </div>
   </div>
 );
@@ -1422,6 +1561,8 @@ const CashToClosePrototype = () => {
     'Entry': [
       { id: 'intent', label: 'Payment Intent', note: 'Buyer-initiated only', disabled: true },
       { id: 'landing', label: 'Landing Page' },
+      { id: 'landing-ineligible', label: 'Landing (Ineligible)', note: 'Closing too soon' },
+      { id: 'method-ineligible', label: 'Method (Ineligible)', note: 'Digital disabled' },
     ],
     'Digital Path': [
       { id: 'method', label: 'Payment Method' },
@@ -1458,6 +1599,8 @@ const CashToClosePrototype = () => {
       case 'phone': return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} />;
       case 'code': return <CodeEntryScreen onNext={() => setCurrentScreen('landing')} onBack={() => setCurrentScreen('phone')} phoneNumber={requestData.buyerPhone} />;
       case 'landing': return <PaymentRequestScreen onNext={() => setCurrentScreen('method')} />;
+      case 'landing-ineligible': return <IneligibleLandingScreen onNext={() => setCurrentScreen('method-ineligible')} />;
+      case 'method-ineligible': return <IneligiblePaymentMethodScreen onNext={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('landing-ineligible')} />;
       case 'method': return <PaymentMethodScreen
         onNext={() => {
           if (selectedMethod === 'wire') setCurrentScreen('wire-review');
