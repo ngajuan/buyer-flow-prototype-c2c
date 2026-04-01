@@ -542,46 +542,6 @@ const IneligiblePaymentMethodScreen = ({ onNext, onBack }) => (
         </p>
       </div>
 
-      {/* Digital Payment — Disabled */}
-      <div style={{
-        borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', position: 'relative',
-        border: `2px solid ${colors.grey}`, opacity: 0.55, cursor: 'not-allowed',
-      }}>
-        {/* Dark header */}
-        <div style={{ background: colors.darkBlue, padding: '20px 20px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-            <Badge variant="grey">Unavailable</Badge>
-          </div>
-          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.white, margin: '0 0 4px' }}>Pay digitally</p>
-          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
-            No numbers to enter. No instructions to verify.
-          </p>
-        </div>
-        {/* Light body */}
-        <div style={{ padding: '16px 20px 20px', background: colors.white }}>
-          {[
-            { icon: <ShieldCheck color={colors.lowEmphasis} />, label: 'Fully insured', desc: 'Full amount protected if anything goes wrong' },
-            { icon: <CalendarCheck color={colors.lowEmphasis} />, label: `Arrives ${requestData.deliveryDate}`, desc: `Guaranteed by ${requestData.deliveryTime}` },
-            { icon: <DirectConnectionIcon color={colors.lowEmphasis} />, label: 'Direct connection', desc: `Funds go straight to ${requestData.titleCompany}` },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: i < 2 ? '12px' : 0 }}>
-              <div style={{ marginTop: '2px' }}>{item.icon}</div>
-              <div>
-                <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>{item.label}</p>
-                <p style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>{item.desc}</p>
-              </div>
-            </div>
-          ))}
-          <div style={{ height: '1px', background: colors.grey, margin: '16px 0 12px' }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-            <div>
-              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.lowEmphasis }}>${DIGITAL_FEE}</span>
-              <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis, marginLeft: '6px' }}>flat fee</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Ineligibility explanation */}
       <div style={{
         background: '#FEF3C7', borderRadius: '8px', padding: '14px 16px', marginBottom: '16px',
@@ -591,8 +551,25 @@ const IneligiblePaymentMethodScreen = ({ onNext, onBack }) => (
           <path d="M12 9V13M12 17H12.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#D97706" strokeWidth="2" strokeLinecap="round"/>
         </svg>
         <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', lineHeight: 1.5, color: '#92400E', margin: 0 }}>
-          <strong>Your closing date is too soon for digital payment.</strong> Digital payments require at least 3 business days to process and arrive before closing. Wire transfer is available as an alternative.
+          Digital payments require at least 3 business days to process and arrive before closing. Wire transfer is available as an alternative.
         </p>
+      </div>
+
+      {/* Digital Payment — Disabled (simplified) */}
+      <div style={{
+        borderRadius: '12px', marginBottom: '16px', padding: '16px 20px',
+        border: `2px solid ${colors.grey}`, opacity: 0.45, cursor: 'not-allowed',
+        background: colors.lightestGrey,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.highEmphasis, margin: 0 }}>Pay digitally</p>
+              <Badge variant="grey">Unavailable</Badge>
+            </div>
+            <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis, margin: 0 }}>${DIGITAL_FEE} flat fee</p>
+          </div>
+        </div>
       </div>
 
       {/* Wire Transfer — Pre-selected */}
