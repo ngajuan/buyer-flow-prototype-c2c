@@ -292,34 +292,83 @@ const DeliveryBanner = ({ date, time }) => (
 
 // House Illustrations
 const HouseWithClock = () => (
-  <svg width="200" height="170" viewBox="0 0 200 170" fill="none">
-    <ellipse cx="35" cy="145" rx="10" ry="35" fill={colors.darkBlue}/>
-    <ellipse cx="165" cy="145" rx="10" ry="35" fill={colors.darkBlue}/>
-    <rect x="55" y="75" width="90" height="70" fill={colors.lightestBlue} stroke={colors.darkBlue} strokeWidth="2"/>
-    <polygon points="45,75 100,30 155,75" fill={colors.darkBlue}/>
-    <rect x="80" y="105" width="40" height="40" fill={colors.darkBlue} rx="2"/>
-    <circle cx="100" cy="122" r="3" fill={colors.orange}/>
-    <rect x="62" y="85" width="22" height="18" fill="white" stroke={colors.darkBlue} strokeWidth="2" rx="2"/>
-    <rect x="116" y="85" width="22" height="18" fill="white" stroke={colors.darkBlue} strokeWidth="2" rx="2"/>
-    <circle cx="155" cy="45" r="28" fill={colors.blue} stroke="white" strokeWidth="3"/>
-    <circle cx="155" cy="45" r="22" fill="white"/>
-    <path d="M155 35V45L162 50" stroke={colors.darkBlue} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="155" cy="45" r="2" fill={colors.darkBlue}/>
+  <svg width="200" height="165" viewBox="0 0 246 203" fill="none">
+    <path d="M42.7953 172.407C43.1433 172.143 43.5681 172 44.005 172H223.06C224.976 172 225.796 174.434 224.27 175.593L203.205 191.593C202.857 191.857 202.432 192 201.995 192H22.9398C21.0239 192 20.2044 189.566 21.73 188.407L42.7953 172.407Z" fill="#DEEFF9"/>
+    <rect x="97" y="93" width="86" height="86" fill="#DEEFF9"/>
+    <rect x="62" y="93" width="122" height="86" stroke="#102754" strokeWidth="3"/>
+    <rect width="14.7163" height="34.6266" rx="1" transform="matrix(1 0 0 -1 88.8359 175.297)" fill="#102754"/>
+    <rect x="113" y="176" width="6" height="34" rx="1" transform="rotate(180 113 176)" fill="white" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M100.955 161.745C100.955 162.298 100.507 162.745 99.9551 162.745H92.4328C91.8805 162.745 91.4328 162.298 91.4328 161.745V144.701C91.4328 144.148 91.8805 143.701 92.4328 143.701H99.9551C100.507 143.701 100.955 144.148 100.955 144.701V161.745Z" fill="#FAFAFA"/>
+    <rect x="120" y="174" width="4" height="37" transform="rotate(180 120 174)" fill="#102754"/>
+    <rect x="77" y="174" width="4" height="37" transform="rotate(180 77 174)" fill="#102754"/>
+    <rect x="86" y="176" width="6" height="34" rx="1" transform="rotate(180 86 176)" fill="white" stroke="#102754" strokeWidth="1.5"/>
+    <rect x="0.75" y="-0.75" width="24.4699" height="16.679" rx="1.39645" transform="matrix(1 0 0 -1 141.776 117.652)" fill="white" stroke="#102754" strokeWidth="1.5"/>
+    <rect x="0.75" y="-0.75" width="33.1266" height="22.7386" rx="1.39645" transform="matrix(1 0 0 -1 137.447 164.275)" fill="white" stroke="#102754" strokeWidth="1.5"/>
+    <rect width="58.8652" height="6.92532" rx="1" transform="matrix(1 0 0 -1 67.1943 180.491)" fill="#102754"/>
+    <rect x="52.6123" y="177.883" width="139.977" height="4.11698" rx="2.05849" fill="#102754"/>
+    <rect x="0.75" y="-0.75" width="10.6193" height="16.679" rx="1.39645" transform="matrix(1 0 0 -1 77.7168 117.652)" fill="white" stroke="#102754" strokeWidth="1.5"/>
+    <rect x="0.75" y="-0.75" width="11.485" height="16.679" rx="1.39645" transform="matrix(1 0 0 -1 104.553 117.652)" fill="white" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M77.7168 106.167H88.5395M105.707 106.167H116.529M142.249 106.167H166.88" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M154.761 106.477V118.596" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M154.761 141.969V165.775" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M172.074 152.79H138.313" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M79.7471 146.872H86M107 146.461H113.508" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M163 56.9023C163 55.8517 162.148 55 161.098 55H153.902C152.852 55 152 55.8517 152 56.9023V65H163V56.9023Z" fill="#102754"/>
+    <path d="M75.1553 65.6231C75.6947 64.9108 76.5366 64.4923 77.4301 64.4923H167.998C168.911 64.4923 169.769 64.9293 170.306 65.6679L189.76 92.4275C190.081 92.8681 190.253 93.3988 190.253 93.9436C190.253 95.3676 189.099 96.5219 187.675 96.5219H122.298H56.9012C55.4888 96.5219 54.3438 95.3769 54.3438 93.9645C54.3438 93.4071 54.5259 92.8649 54.8624 92.4206L75.1553 65.6231Z" fill="#102754"/>
+    <path d="M158.731 87.1152L87.9072 87.1152C85.2922 87.1151 83.7485 84.184 85.2275 82.0273L91.6143 72.7139C92.2203 71.8302 93.2234 71.3018 94.2949 71.3018L152.81 71.3018C153.921 71.3018 154.956 71.8705 155.553 72.8086L161.474 82.1211C162.849 84.2847 161.295 87.1151 158.731 87.1152Z" fill="white" stroke="white" strokeWidth="1.5"/>
+    <rect x="150.474" y="81.6128" width="54.3441" height="4.11698" rx="2.05849" transform="rotate(-180 150.474 81.6128)" fill="#102754"/>
+    <g clipPath="url(#clip0_house)">
+      <path d="M105.533 82.5555L105.533 33.2928C105.533 30.5078 107.791 28.25 110.576 28.2499L136.617 28.2499C139.402 28.2499 141.66 30.5077 141.66 33.2928L141.66 82.5555L105.533 82.5555Z" fill="#156FBE" stroke="white" strokeWidth="1.5"/>
+      <path d="M117.201 62.2789L119.357 61.2457C119.807 61.9645 120.376 62.526 121.064 62.9303C121.768 63.3346 122.524 63.5367 123.333 63.5367C124.097 63.5367 124.741 63.3271 125.265 62.9078C125.789 62.4886 126.051 61.8896 126.051 61.111C126.051 60.7067 125.976 60.3623 125.826 60.0778C125.676 59.7783 125.414 59.5087 125.04 59.2692C124.681 59.0296 124.329 58.8349 123.984 58.6852C123.64 58.5205 123.131 58.2959 122.457 58.0114C121.798 57.7268 121.237 57.4723 120.772 57.2477C118.766 56.2744 117.763 54.8219 117.763 52.8903C117.763 51.902 118.107 50.9661 118.796 50.0826C119.5 49.1842 120.533 48.6152 121.895 48.3756V46.4215H124.591V48.4205C125.459 48.5104 126.283 48.8772 127.062 49.5211C127.855 50.15 128.409 50.8239 128.724 51.5426L126.522 52.5983C125.669 51.3255 124.576 50.6891 123.243 50.6891C122.479 50.6891 121.858 50.8987 121.379 51.318C120.915 51.7373 120.683 52.2688 120.683 52.9127C120.683 53.1673 120.713 53.3994 120.772 53.609C120.832 53.8186 120.945 54.0133 121.109 54.193C121.274 54.3577 121.431 54.5074 121.581 54.6422C121.746 54.762 121.993 54.9043 122.322 55.069C122.652 55.2187 122.929 55.346 123.153 55.4508C123.378 55.5406 123.722 55.6829 124.187 55.8776C124.666 56.0722 125.055 56.2295 125.354 56.3492C127.795 57.3824 129.016 58.8873 129.016 60.8639C129.016 62.2115 128.604 63.3271 127.78 64.2106C126.972 65.0791 125.909 65.6331 124.591 65.8727V67.7145H121.895V65.8278C120.982 65.7379 120.076 65.3561 119.178 64.6823C118.279 63.9934 117.62 63.1923 117.201 62.2789Z" fill="#FAFAFA"/>
+    </g>
+    <path d="M69.151 134.374C67.4057 135.126 67.9434 137.73 69.8441 137.73H123.427C125.302 137.73 125.864 135.182 124.164 134.393L98.3465 122.416C97.8944 122.206 97.3744 122.199 96.9168 122.396L69.151 134.374Z" fill="#102754"/>
+    <path d="M38.3695 117.265C38.5184 116.288 39.3585 115.567 40.3466 115.567H41.5051C42.4932 115.567 43.3333 116.288 43.4822 117.265L50.53 163.474C50.7146 164.684 49.7776 165.775 48.5528 165.775H33.2989C32.0741 165.775 31.1371 164.684 31.3217 163.474L38.3695 117.265Z" fill="#102754"/>
+    <rect x="43.9561" y="182.223" width="5.19399" height="34.6266" rx="2.59699" transform="rotate(180 43.9561 182.223)" stroke="#102754" strokeWidth="1.5"/>
+    <path d="M200.649 125.922C200.798 124.945 201.638 124.223 202.627 124.223H202.985C203.973 124.223 204.814 124.945 204.962 125.922L210.679 163.474C210.864 164.685 209.927 165.775 208.702 165.775H196.91C195.685 165.775 194.748 164.685 194.932 163.474L200.649 125.922Z" fill="#102754"/>
+    <rect x="205.836" y="182.223" width="5.19399" height="34.6266" rx="2.59699" transform="rotate(180 205.836 182.223)" stroke="#102754" strokeWidth="1.5"/>
+    <defs>
+      <clipPath id="clip0_house">
+        <rect width="54" height="59" fill="white" transform="translate(96 23)"/>
+      </clipPath>
+    </defs>
   </svg>
 );
 
 const HouseWithCheck = () => (
-  <svg width="200" height="150" viewBox="0 0 200 150" fill="none">
-    <ellipse cx="35" cy="130" rx="10" ry="35" fill={colors.darkBlue}/>
-    <ellipse cx="165" cy="130" rx="10" ry="35" fill={colors.darkBlue}/>
-    <rect x="55" y="65" width="90" height="75" fill={colors.lightestBlue} stroke={colors.darkBlue} strokeWidth="2"/>
-    <polygon points="45,65 100,20 155,65" fill={colors.darkBlue}/>
-    <rect x="80" y="100" width="40" height="40" fill={colors.darkBlue} rx="2"/>
-    <circle cx="100" cy="118" r="3" fill={colors.orange}/>
-    <rect x="62" y="75" width="22" height="18" fill="white" stroke={colors.darkBlue} strokeWidth="2" rx="2"/>
-    <rect x="116" y="75" width="22" height="18" fill="white" stroke={colors.darkBlue} strokeWidth="2" rx="2"/>
-    <circle cx="155" cy="35" r="25" fill={colors.green}/>
-    <path d="M143 35L151 43L167 27" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  <svg width="200" height="161" viewBox="0 0 144 116" fill="none">
+    <path d="M17.5214 101.748C17.7577 101.569 18.0463 101.472 18.3431 101.472H139.965C141.267 101.472 141.823 103.125 140.787 103.912L126.479 114.78C126.242 114.959 125.954 115.057 125.657 115.057H4.03455C2.7332 115.057 2.17655 113.403 3.21286 112.616L17.5214 101.748Z" fill="#DEEFF9"/>
+    <rect x="54.3438" y="47.8113" width="58.4151" height="58.4151" fill="#DEEFF9"/>
+    <rect x="31" y="48" width="23" height="58" fill="white"/>
+    <rect x="30.5664" y="47.8113" width="82.8679" height="58.4151" stroke="#102754" strokeWidth="2.03774"/>
+    <rect width="9.99598" height="23.52" rx="0.679245" transform="matrix(1 0 0 -1 48.7969 103.711)" fill="#102754"/>
+    <rect x="65.2109" y="104.189" width="4.07547" height="23.0943" rx="0.679245" transform="rotate(180 65.2109 104.189)" fill="white" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M57.0273 94.5062C57.0273 94.8813 56.7232 95.1854 56.3481 95.1854H51.2386C50.8635 95.1854 50.5594 94.8813 50.5594 94.5062V82.9287C50.5594 82.5536 50.8635 82.2495 51.2386 82.2495H56.3481C56.7232 82.2495 57.0273 82.5536 57.0273 82.9287V94.5062Z" fill="#FAFAFA"/>
+    <rect x="69.9648" y="102.83" width="2.71698" height="25.1321" transform="rotate(180 69.9648 102.83)" fill="#102754"/>
+    <rect x="40.7578" y="102.83" width="2.71698" height="25.1321" transform="rotate(180 40.7578 102.83)" fill="#102754"/>
+    <rect x="46.8711" y="104.189" width="4.07547" height="23.0943" rx="0.679245" transform="rotate(180 46.8711 104.189)" fill="white" stroke="#102754" strokeWidth="1.01887"/>
+    <rect x="0.509434" y="-0.509434" width="16.6211" height="11.3291" rx="0.948532" transform="matrix(1 0 0 -1 84.7539 64.556)" fill="white" stroke="#102754" strokeWidth="1.01887"/>
+    <rect x="0.509434" y="-0.509434" width="22.5011" height="15.4451" rx="0.948532" transform="matrix(1 0 0 -1 81.8164 96.2245)" fill="white" stroke="#102754" strokeWidth="1.01887"/>
+    <rect width="39.9839" height="4.70399" rx="0.679245" transform="matrix(1 0 0 -1 34.0977 107.239)" fill="#102754"/>
+    <rect x="24.1914" y="105.468" width="95.0789" height="2.79644" rx="1.39822" fill="#102754"/>
+    <rect x="0.509434" y="-0.509434" width="7.21311" height="11.3291" rx="0.948532" transform="matrix(1 0 0 -1 41.2422 64.556)" fill="white" stroke="#102754" strokeWidth="1.01887"/>
+    <rect x="0.509434" y="-0.509434" width="7.80111" height="11.3291" rx="0.948532" transform="matrix(1 0 0 -1 59.4727 64.556)" fill="white" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M41.2422 56.7548H48.5935M60.2541 56.7548H67.6054M85.0755 56.7548H101.806" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M93.5742 56.9656V65.1976" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M93.5742 81.0735V97.2435" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M105.336 88.4235H82.404" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M42.6211 84.4039H46.8684M61.1325 84.1243H65.553" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M99.1719 23.2922C99.1719 22.5785 98.5934 22 97.8797 22H92.9923C92.2787 22 91.7002 22.5785 91.7002 23.2922V28.7925H99.1719V23.2922Z" fill="#102754"/>
+    <path d="M39.5033 29.2157C39.8697 28.7319 40.4416 28.4476 41.0485 28.4476H102.566C103.186 28.4476 103.769 28.7445 104.134 29.2461L117.348 47.4225C117.566 47.7217 117.683 48.0823 117.683 48.4523C117.683 49.4195 116.899 50.2036 115.932 50.2036H71.5251H27.1043C26.1449 50.2036 25.3672 49.4259 25.3672 48.4665C25.3672 48.0879 25.4909 47.7196 25.7195 47.4178L39.5033 29.2157Z" fill="#102754"/>
+    <path d="M35.4264 75.9142C34.2409 76.4256 34.6062 78.1943 35.8972 78.1943H72.2934C73.5667 78.1943 73.9487 76.4632 72.7936 75.9274L55.2573 67.7918C54.9503 67.6493 54.597 67.6445 54.2862 67.7786L35.4264 75.9142Z" fill="#102754"/>
+    <path d="M14.5178 64.2932C14.619 63.6297 15.1895 63.1395 15.8607 63.1395H16.6476C17.3188 63.1395 17.8894 63.6297 17.9906 64.2932L22.7777 95.6801C22.9032 96.5025 22.2667 97.2435 21.4348 97.2435H11.0736C10.2417 97.2435 9.6052 96.5025 9.73062 95.6801L14.5178 64.2932Z" fill="#102754"/>
+    <rect x="18.3125" y="108.415" width="3.52799" height="23.52" rx="1.764" transform="rotate(180 18.3125 108.415)" stroke="#102754" strokeWidth="1.01887"/>
+    <path d="M124.746 70.1734C124.847 69.5098 125.418 69.0194 126.089 69.0194H126.333C127.004 69.0194 127.575 69.5098 127.676 70.1734L131.559 95.6804C131.684 96.5027 131.048 97.2434 130.216 97.2434H122.206C121.374 97.2434 120.738 96.5027 120.863 95.6804L124.746 70.1734Z" fill="#102754"/>
+    <rect x="128.27" y="108.415" width="3.52799" height="23.52" rx="1.764" transform="rotate(180 128.27 108.415)" stroke="#102754" strokeWidth="1.01887"/>
+    <circle cx="71.5" cy="22.5" r="21" fill="white" stroke="#DEEFF9" strokeWidth="3"/>
+    <path d="M78.628 17.539V19.9043C78.628 20.7473 77.9124 21.4316 77.0306 21.4316C76.1478 21.4316 75.4332 20.7473 75.4332 19.9043V17.539C75.4332 15.6176 73.7986 14.0546 71.7891 14.0546V11C75.56 11 78.628 13.9335 78.628 17.539Z" fill="#156FBE"/>
+    <path d="M64.9326 17.539V19.9043C64.9326 20.7473 65.6482 21.4316 66.53 21.4316C67.4128 21.4316 68.1274 20.7473 68.1274 19.9043V17.539C68.1274 15.6176 69.762 14.0546 71.7716 14.0546L73.0273 12.621L71.7716 11C68.0006 11 64.9326 13.9335 64.9326 17.539Z" fill="#156FBE"/>
+    <path fillRule="evenodd" clipRule="evenodd" d="M80.5792 29.9044V21.1579C80.5792 19.6225 79.2736 18.3741 77.6677 18.3741H71.7893V18.3765H65.9115C64.3056 18.3765 63 19.6248 63 21.1603V29.9067C63 31.4422 64.3056 32.6905 65.9115 32.6905H71.7899L71.7908 32.6882H77.6677C79.2736 32.6882 80.5792 31.4398 80.5792 29.9044Z" fill="#156FBE"/>
+    <path fillRule="evenodd" clipRule="evenodd" d="M72.0892 23.29C72.8275 23.4244 73.3862 24.0445 73.3862 24.7904V26.2749C73.3862 27.119 72.6706 27.8023 71.7888 27.8023C70.907 27.8023 70.1914 27.119 70.1914 26.2749V24.7904C70.1914 23.9465 70.9067 23.2634 71.7881 23.2631V23.2629C71.891 23.2629 71.9917 23.2722 72.0892 23.29Z" fill="#102754"/>
   </svg>
 );
 
@@ -471,7 +520,7 @@ const PaymentRequestScreen = ({ onNext }) => (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px' }}><rect x="3" y="4" width="18" height="18" rx="2" stroke={colors.mediumEmphasis} strokeWidth="2"/><path d="M16 2V6M8 2V6M3 10H21" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round"/></svg>
           <div>
             <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>Closing</p>
-            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>{requestData.closingDate} at {requestData.closingTime}</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>{requestData.closingDate}</p>
           </div>
         </div>
       </div>
@@ -512,7 +561,7 @@ const IneligibleLandingScreen = ({ onNext }) => (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px' }}><rect x="3" y="4" width="18" height="18" rx="2" stroke={colors.mediumEmphasis} strokeWidth="2"/><path d="M16 2V6M8 2V6M3 10H21" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round"/></svg>
           <div>
             <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>Closing</p>
-            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>{requestData.closingDate} at {requestData.closingTime}</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>{requestData.closingDate}</p>
           </div>
         </div>
       </div>
