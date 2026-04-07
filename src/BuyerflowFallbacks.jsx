@@ -1570,13 +1570,67 @@ const WireInstructionsScreen = ({ onBack, onGoDigital }) => (
 // ============================================
 // Main App Component
 // ============================================
+// Screen ID to URL slug mapping
+const screenSlugs = {
+  'phone': '/phone-verify',
+  'code': '/code-entry',
+  'intent': '/payment-intent',
+  'landing': '/landing-page',
+  'landing-ineligible': '/landing-ineligible',
+  'method-ineligible': '/method-ineligible',
+  'method': '/payment-methods',
+  'kyc': '/kyc',
+  'kyc-verifying': '/kyc-verifying',
+  'plaid': '/bank-via-plaid',
+  'bank-select': '/bank-select',
+  'eligibility': '/eligibility-check',
+  'cutoff': '/3pm-cutoff-alert',
+  'review': '/review-payment',
+  'processing': '/processing',
+  'success': '/confirmation',
+  'success-share': '/share-modal',
+  'wire-review': '/review-wire',
+  'wire-protection-pay': '/protection-payment',
+  'wire': '/wire-instructions',
+  'err-plaid': '/plaid-failed',
+  'err-savings': '/savings-account',
+  'err-closing': '/closing-too-soon',
+  'err-funds': '/insufficient-funds',
+  'err-balance': '/balance-unavailable',
+};
+
+const slugToScreen = Object.fromEntries(Object.entries(screenSlugs).map(([k, v]) => [v, k]));
+
+const getInitialScreen = () => {
+  const path = window.location.pathname;
+  return slugToScreen[path] || 'phone';
+};
+
 const CashToClosePrototype = () => {
-  const [currentScreen, setCurrentScreen] = useState('phone');
+  const [currentScreen, setCurrentScreen] = useState(getInitialScreen);
   const [entryPath, setEntryPath] = useState('title'); // 'title' or 'buyer'
   const [userType, setUserType] = useState('returning'); // 'new' or 'returning'
   const [selectedMethod, setSelectedMethod] = useState('digital');
   const [useExistingBank, setUseExistingBank] = useState(true);
   const [checkboxChecked, setCheckboxChecked] = useState(false);
+
+  // Sync URL with current screen
+  useEffect(() => {
+    const slug = screenSlugs[currentScreen];
+    if (slug && window.location.pathname !== slug) {
+      window.history.pushState(null, '', slug);
+    }
+  }, [currentScreen]);
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const screen = slugToScreen[window.location.pathname];
+      if (screen) setCurrentScreen(screen);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   // Screen definitions for navigation
   const screenGroups = {
