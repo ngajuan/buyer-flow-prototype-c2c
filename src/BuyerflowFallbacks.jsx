@@ -150,7 +150,7 @@ const BackButton = ({ onClick }) => (
 
 const PrimaryButton = ({ children, onClick, disabled, fullWidth = true }) => (
   <button onClick={onClick} disabled={disabled} style={{
-    width: fullWidth ? '326px' : 'auto', height: '48px', padding: '10px 16px', borderRadius: '6px',
+    width: fullWidth ? '100%' : 'auto', height: '48px', padding: '10px 16px', borderRadius: '6px', boxSizing: 'border-box',
     border: 'none', background: disabled ? colors.lowEmphasis : colors.blue,
     color: colors.white, fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1,
     cursor: disabled ? 'not-allowed' : 'pointer',
@@ -224,6 +224,56 @@ const ProgressTracker = ({ title, progress, onBack }) => (
   </div>
 );
 
+// Co-branded header with title company logo + CertifID badge
+// mode: 'logo' = centered logo only (landing pages), 'progress' = back button + logo + progress bar (inner screens)
+const CoBrandedHeader = ({ mode = 'logo', progress, onBack, customLogo }) => {
+  const CompanyLogo = () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      {customLogo ? (
+        <img src={customLogo} alt={requestData.titleCompany} style={{ height: '32px', objectFit: 'contain' }} />
+      ) : (
+        <>
+          <div style={{ width: '30px', height: '30px', background: '#D4763B', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/><path d="M12 2L12 6M12 18L12 22M2 12L6 12M18 12L22 12" stroke="white" strokeWidth="2"/></svg>
+          </div>
+          <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 700, fontSize: '18px', letterSpacing: '3px', color: '#3B3B49' }}>PINPOINT</span>
+        </>
+      )}
+    </div>
+  );
+
+  if (mode === 'logo') {
+    return (
+      <div style={{ position: 'absolute', top: '65px', left: 0, right: 0, background: colors.white, zIndex: 5 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '56px' }}>
+          <CompanyLogo />
+        </div>
+        <div style={{ height: '1px', background: colors.grey }} />
+      </div>
+    );
+  }
+
+  // mode === 'progress'
+  return (
+    <div style={{ position: 'absolute', top: '65px', left: 0, right: 0, background: colors.white, zIndex: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px', height: '56px' }}>
+        {onBack ? (
+          <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: colors.lightestGrey, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} onClick={onBack}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+        ) : <div style={{ width: '38px' }} />}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <CompanyLogo />
+        </div>
+        <div style={{ width: '38px' }} />
+      </div>
+      <div style={{ height: '4px', background: colors.grey, width: '100%' }}>
+        <div style={{ height: '100%', width: `${progress}%`, background: colors.blue, borderRadius: '0 3px 3px 0', transition: 'width 0.3s ease' }} />
+      </div>
+    </div>
+  );
+};
+
 const Badge = ({ children, variant = 'blue' }) => {
   const bgColor = variant === 'green' ? colors.lightGreen : variant === 'red' ? colors.lightRed : variant === 'orange' ? colors.lightOrange : variant === 'grey' ? colors.lightestGrey : colors.lightestBlue;
   const textColor = variant === 'green' ? colors.darkGreen : variant === 'red' ? colors.red : variant === 'orange' ? '#92400E' : variant === 'grey' ? colors.lowEmphasis : colors.blue;
@@ -268,6 +318,10 @@ const PhoneContainer = ({ children }) => (
     width: '390px', height: '844px', background: colors.white, borderRadius: '47px',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', overflow: 'hidden', position: 'relative', fontFamily: fonts.oxygen,
   }}>
+    <style>{`
+      .phone-scroll::-webkit-scrollbar { width: 0px; background: transparent; }
+      .phone-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+    `}</style>
     <ScrollBarHeader />
     {children}
     <BottomToolbar />
@@ -402,14 +456,7 @@ const HouseWithX = () => (
   </svg>
 );
 
-const TitleCompanyLogo = () => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50px', margin: '24px auto 0', width: '254px' }}>
-    <div style={{ width: '30px', height: '30px', background: colors.blue, borderRadius: '6px', marginRight: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/><path d="M12 2L12 6M12 18L12 22M2 12L6 12M18 12L22 12" stroke="white" strokeWidth="2"/></svg>
-    </div>
-    <span style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 700, fontSize: '20.4px', letterSpacing: '3.06px', color: '#3B3B49' }}>PINPOINT</span>
-  </div>
-);
+// Legacy TitleCompanyLogo kept for reference — screens now use CoBrandedHeader instead
 
 const CertifIDBranding = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', paddingBottom: '100px' }}>
@@ -466,7 +513,7 @@ const PaymentIntentScreen = ({ onNext, onBack }) => {
   );
 
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <div style={{ padding: '24px 32px 120px' }}>
         <BackButton onClick={onBack} />
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '16px 0 8px' }}>What are you paying for?</p>
@@ -496,10 +543,10 @@ const PaymentIntentScreen = ({ onNext, onBack }) => {
 // ============================================
 // SCREEN: Landing Page
 // ============================================
-const PaymentRequestScreen = ({ onNext }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <TitleCompanyLogo />
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}><HouseWithClock /></div>
+const PaymentRequestScreen = ({ onNext, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={0} customLogo={customLogo} />
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '70px auto 20px' }}><HouseWithClock /></div>
     <div style={{ padding: '0 32px' }}>
       <Badge>Cash to Close</Badge>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '32px', lineHeight: 1.2, color: colors.darkBlue, margin: '12px 0 8px' }}>
@@ -537,10 +584,10 @@ const PaymentRequestScreen = ({ onNext }) => (
 // ============================================
 // SCREEN: Ineligible Landing Page (closing date too soon for digital)
 // ============================================
-const IneligibleLandingScreen = ({ onNext }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <TitleCompanyLogo />
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}><HouseWithClock /></div>
+const IneligibleLandingScreen = ({ onNext, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={0} customLogo={customLogo} />
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '70px auto 20px' }}><HouseWithClock /></div>
     <div style={{ padding: '0 32px' }}>
       <Badge>Cash to Close</Badge>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '32px', lineHeight: 1.2, color: colors.darkBlue, margin: '12px 0 8px' }}>
@@ -577,9 +624,9 @@ const IneligibleLandingScreen = ({ onNext }) => (
 // ============================================
 // SCREEN: Ineligible Payment Method (digital disabled)
 // ============================================
-const IneligiblePaymentMethodScreen = ({ onNext, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <ProgressTracker title="Cash to Close" progress={20} onBack={onBack} />
+const IneligiblePaymentMethodScreen = ({ onNext, onBack, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={20} onBack={onBack} customLogo={customLogo} />
     <div style={{ padding: '75px 32px 120px' }}>
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
@@ -729,11 +776,11 @@ const DirectConnectionIcon = ({ size = 18, color = colors.blue }) => (
   </svg>
 );
 
-const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod }) => {
+const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod, customLogo }) => {
   const delta = DIGITAL_FEE - WIRE_FEE;
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-      <ProgressTracker title="Cash to Close" progress={20} onBack={onBack} />
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <CoBrandedHeader mode="progress" progress={20} onBack={onBack} customLogo={customLogo} />
       <div style={{ padding: '75px 32px 120px' }}>
         {/* Header */}
         <div style={{ marginBottom: '24px' }}>
@@ -830,9 +877,9 @@ const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod
 // ============================================
 // SCREEN: KYC - Identity Verification (New Users)
 // ============================================
-const KYCScreen = ({ onNext, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <ProgressTracker title="Cash to Close" progress={35} onBack={onBack} />
+const KYCScreen = ({ onNext, onBack, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={35} onBack={onBack} customLogo={customLogo} />
     <div style={{ padding: '75px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Verify your identity</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 20px' }}>
@@ -877,7 +924,7 @@ const KYCVerifyingScreen = ({ onNext }) => {
 // SCREEN: KYC Failed
 // ============================================
 const KYCFailedScreen = ({ onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ marginTop: '20px', marginBottom: '24px', display: 'flex', justifyContent: 'center' }}><HouseWithX /></div>
@@ -897,11 +944,11 @@ const KYCFailedScreen = ({ onWire, onBack }) => (
 // ============================================
 // SCREEN: Bank Connection (Plaid - New Users)
 // ============================================
-const PlaidBankConnectionScreen = ({ onNext, onBack }) => {
+const PlaidBankConnectionScreen = ({ onNext, onBack, customLogo }) => {
   const [connected, setConnected] = useState(false);
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-      <ProgressTracker title="Cash to Close" progress={50} onBack={onBack} />
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <CoBrandedHeader mode="progress" progress={50} onBack={onBack} customLogo={customLogo} />
       <div style={{ padding: '75px 32px 120px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Connect your bank</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
@@ -956,7 +1003,7 @@ const PlaidBankConnectionScreen = ({ onNext, onBack }) => {
 // SCREEN: Plaid Connection Failed
 // ============================================
 const PlaidFailedScreen = ({ onRetry, onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ marginTop: '20px', marginBottom: '24px', display: 'flex', justifyContent: 'center' }}><HouseWithX /></div>
@@ -973,9 +1020,9 @@ const PlaidFailedScreen = ({ onRetry, onWire, onBack }) => (
 // ============================================
 // SCREEN: Bank Account Selection (Returning User)
 // ============================================
-const BankAccountScreen = ({ onNext, onBack, useExisting, setUseExisting }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <ProgressTracker title="Cash to Close" progress={50} onBack={onBack} />
+const BankAccountScreen = ({ onNext, onBack, useExisting, setUseExisting, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={50} onBack={onBack} customLogo={customLogo} />
     <div style={{ padding: '75px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Select bank account</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
@@ -1065,7 +1112,7 @@ const EligibilityCheckScreen = ({ onNext }) => {
 // ERROR SCREENS: Eligibility Failures
 // ============================================
 const ClosingTooSoonScreen = ({ onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithWarning /></div>
@@ -1083,7 +1130,7 @@ const ClosingTooSoonScreen = ({ onWire, onBack }) => (
 );
 
 const OverTransferLimitScreen = ({ onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithWarning /></div>
@@ -1098,7 +1145,7 @@ const OverTransferLimitScreen = ({ onWire, onBack }) => (
 );
 
 const InsufficientFundsScreen = ({ onRetry, onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithX /></div>
@@ -1123,7 +1170,7 @@ const InsufficientFundsScreen = ({ onRetry, onWire, onBack }) => (
 );
 
 const BalanceUnavailableScreen = ({ onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithWarning /></div>
@@ -1138,7 +1185,7 @@ const BalanceUnavailableScreen = ({ onWire, onBack }) => (
 );
 
 const SavingsAccountScreen = ({ onRetry, onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithWarning /></div>
@@ -1163,7 +1210,7 @@ const SavingsAccountScreen = ({ onRetry, onWire, onBack }) => (
 // SCREEN: 3pm Cutoff — Delivery Date Changed
 // ============================================
 const CutoffAlertScreen = ({ onAccept, onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithClock /></div>
@@ -1192,11 +1239,11 @@ const CutoffAlertScreen = ({ onAccept, onWire, onBack }) => (
 // ============================================
 // SCREEN: Review Payment
 // ============================================
-const ReviewPaymentScreen = ({ onNext, onBack, checkboxChecked, setCheckboxChecked }) => {
+const ReviewPaymentScreen = ({ onNext, onBack, checkboxChecked, setCheckboxChecked, customLogo }) => {
   const totalAmount = requestData.paymentAmount + 48;
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-      <ProgressTracker title="Cash to Close" progress={75} onBack={onBack} />
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <CoBrandedHeader mode="progress" progress={75} onBack={onBack} customLogo={customLogo} />
       <div style={{ padding: '75px 24px 120px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1, color: colors.darkBlue, margin: '0 0 24px 8px' }}>Review payment</p>
         <DeliveryBanner date={requestData.deliveryDate} time={requestData.deliveryTime} />
@@ -1271,7 +1318,7 @@ const ProcessingScreen = ({ onNext }) => {
 // SCREEN: Payment Failed
 // ============================================
 const PaymentFailedScreen = ({ onRetry, onDifferentAccount, onWire, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <div style={{ padding: '24px 32px 120px', textAlign: 'center' }}>
       <div style={{ textAlign: 'left' }}><BackButton onClick={onBack} /></div>
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithX /></div>
@@ -1293,7 +1340,7 @@ const SuccessScreen = ({ onShowShare }) => {
   const totalAmount = requestData.paymentAmount + 48;
   const transactionId = '8f2c4a91-7e3d-4b5f-9c1a-2d6e8f0a3b5c';
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <div style={{ padding: '30px 32px 120px', textAlign: 'center' }}>
         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}><HouseWithCheck /></div>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>Payment submitted to {requestData.titleCompany}!</p>
@@ -1336,7 +1383,7 @@ const SuccessScreen = ({ onShowShare }) => {
 const SuccessWithShareScreen = ({ onClose }) => {
   const totalAmount = requestData.paymentAmount + 48;
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <div style={{ padding: '30px 32px 120px', textAlign: 'center' }}>
         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}><HouseWithCheck /></div>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>Payment submitted to {requestData.titleCompany}!</p>
@@ -1366,13 +1413,13 @@ const SuccessWithShareScreen = ({ onClose }) => {
 // ============================================
 // SCREEN: Review Wire Instructions
 // ============================================
-const ReviewWireScreen = ({ onNext, onBack }) => {
+const ReviewWireScreen = ({ onNext, onBack, customLogo }) => {
   const [protectionOn, setProtectionOn] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
 
   return (
-    <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-      <ProgressTracker title="Cash to Close" progress={30} onBack={onBack} />
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <CoBrandedHeader mode="progress" progress={30} onBack={onBack} customLogo={customLogo} />
       <div style={{ padding: '75px 32px 120px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Review Wire Instructions</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
@@ -1490,9 +1537,9 @@ const ReviewWireScreen = ({ onNext, onBack }) => {
 // ============================================
 // SCREEN: Wire Protection Payment
 // ============================================
-const WireProtectionPaymentScreen = ({ onNext, onBack }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <ProgressTracker title="Cash to Close" progress={45} onBack={onBack} />
+const WireProtectionPaymentScreen = ({ onNext, onBack, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={45} onBack={onBack} customLogo={customLogo} />
     <div style={{ padding: '75px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Complete payment</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
@@ -1528,9 +1575,9 @@ const WireProtectionPaymentScreen = ({ onNext, onBack }) => (
 // ============================================
 // SCREEN: Wire Instructions
 // ============================================
-const WireInstructionsScreen = ({ onBack, onGoDigital }) => (
-  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <ProgressTracker title="Wire Instructions" progress={100} onBack={onBack} />
+const WireInstructionsScreen = ({ onBack, onGoDigital, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={100} onBack={onBack} customLogo={customLogo} />
     <div style={{ padding: '75px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Wire Transfer Instructions</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
@@ -1613,6 +1660,16 @@ const CashToClosePrototype = () => {
   const [selectedMethod, setSelectedMethod] = useState('digital');
   const [useExistingBank, setUseExistingBank] = useState(true);
   const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [customLogo, setCustomLogo] = useState(null);
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setCustomLogo(ev.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Sync URL with current screen
   useEffect(() => {
@@ -1674,13 +1731,14 @@ const CashToClosePrototype = () => {
   };
 
   const renderScreen = () => {
+    const cl = customLogo; // shorthand for passing to all screens
     switch (currentScreen) {
-      case 'intent': return <PaymentIntentScreen onNext={() => setCurrentScreen('landing')} onBack={() => {}} />;
-      case 'phone': return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} />;
-      case 'code': return <CodeEntryScreen onNext={() => setCurrentScreen('landing')} onBack={() => setCurrentScreen('phone')} phoneNumber={requestData.buyerPhone} />;
-      case 'landing': return <PaymentRequestScreen onNext={() => setCurrentScreen('method')} />;
-      case 'landing-ineligible': return <IneligibleLandingScreen onNext={() => setCurrentScreen('method-ineligible')} />;
-      case 'method-ineligible': return <IneligiblePaymentMethodScreen onNext={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('landing-ineligible')} />;
+      case 'intent': return <PaymentIntentScreen onNext={() => setCurrentScreen('landing')} onBack={() => {}} customLogo={cl} />;
+      case 'phone': return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} customLogo={cl} />;
+      case 'code': return <CodeEntryScreen onNext={() => setCurrentScreen('landing')} onBack={() => setCurrentScreen('phone')} phoneNumber={requestData.buyerPhone} customLogo={cl} />;
+      case 'landing': return <PaymentRequestScreen onNext={() => setCurrentScreen('method')} customLogo={cl} />;
+      case 'landing-ineligible': return <IneligibleLandingScreen onNext={() => setCurrentScreen('method-ineligible')} customLogo={cl} />;
+      case 'method-ineligible': return <IneligiblePaymentMethodScreen onNext={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('landing-ineligible')} customLogo={cl} />;
       case 'method': return <PaymentMethodScreen
         onNext={() => {
           if (selectedMethod === 'wire') setCurrentScreen('wire-review');
@@ -1688,33 +1746,33 @@ const CashToClosePrototype = () => {
           else setCurrentScreen('bank-select');
         }}
         onBack={() => setCurrentScreen('landing')}
-        selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod}
+        selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} customLogo={cl}
       />;
-      case 'kyc': return <KYCScreen onNext={() => setCurrentScreen('kyc-verifying')} onBack={() => setCurrentScreen('method')} />;
-      case 'kyc-verifying': return <KYCVerifyingScreen onNext={() => setCurrentScreen('plaid')} />;
-      case 'plaid': return <PlaidBankConnectionScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('kyc')} />;
-      case 'bank-select': return <BankAccountScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('method')} useExisting={useExistingBank} setUseExisting={setUseExistingBank} />;
-      case 'eligibility': return <EligibilityCheckScreen onNext={() => setCurrentScreen('review')} />;
-      case 'cutoff': return <CutoffAlertScreen onAccept={() => setCurrentScreen('review')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('review')} />;
-      case 'review': return <ReviewPaymentScreen onNext={() => setCurrentScreen('processing')} onBack={() => setCurrentScreen(userType === 'new' ? 'plaid' : 'bank-select')} checkboxChecked={checkboxChecked} setCheckboxChecked={setCheckboxChecked} />;
-      case 'processing': return <ProcessingScreen onNext={() => setCurrentScreen('success')} />;
-      case 'success': return <SuccessScreen onShowShare={() => setCurrentScreen('success-share')} />;
-      case 'success-share': return <SuccessWithShareScreen onClose={() => setCurrentScreen('success')} />;
+      case 'kyc': return <KYCScreen onNext={() => setCurrentScreen('kyc-verifying')} onBack={() => setCurrentScreen('method')} customLogo={cl} />;
+      case 'kyc-verifying': return <KYCVerifyingScreen onNext={() => setCurrentScreen('plaid')} customLogo={cl} />;
+      case 'plaid': return <PlaidBankConnectionScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('kyc')} customLogo={cl} />;
+      case 'bank-select': return <BankAccountScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('method')} useExisting={useExistingBank} setUseExisting={setUseExistingBank} customLogo={cl} />;
+      case 'eligibility': return <EligibilityCheckScreen onNext={() => setCurrentScreen('review')} customLogo={cl} />;
+      case 'cutoff': return <CutoffAlertScreen onAccept={() => setCurrentScreen('review')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('review')} customLogo={cl} />;
+      case 'review': return <ReviewPaymentScreen onNext={() => setCurrentScreen('processing')} onBack={() => setCurrentScreen(userType === 'new' ? 'plaid' : 'bank-select')} checkboxChecked={checkboxChecked} setCheckboxChecked={setCheckboxChecked} customLogo={cl} />;
+      case 'processing': return <ProcessingScreen onNext={() => setCurrentScreen('success')} customLogo={cl} />;
+      case 'success': return <SuccessScreen onShowShare={() => setCurrentScreen('success-share')} customLogo={cl} />;
+      case 'success-share': return <SuccessWithShareScreen onClose={() => setCurrentScreen('success')} customLogo={cl} />;
       case 'wire-review': return <ReviewWireScreen
         onNext={(hasProtection) => {
           if (hasProtection) setCurrentScreen('wire-protection-pay');
           else setCurrentScreen('wire');
         }}
-        onBack={() => setCurrentScreen('method')}
+        onBack={() => setCurrentScreen('method')} customLogo={cl}
       />;
-      case 'wire-protection-pay': return <WireProtectionPaymentScreen onNext={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('wire-review')} />;
-      case 'wire': return <WireInstructionsScreen onBack={() => setCurrentScreen('wire-review')} onGoDigital={() => setCurrentScreen('method')} />;
-      case 'err-plaid': return <PlaidFailedScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} />;
-      case 'err-savings': return <SavingsAccountScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('plaid')} />;
-      case 'err-closing': return <ClosingTooSoonScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} />;
-      case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
-      case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} />;
-      default: return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} />;
+      case 'wire-protection-pay': return <WireProtectionPaymentScreen onNext={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('wire-review')} customLogo={cl} />;
+      case 'wire': return <WireInstructionsScreen onBack={() => setCurrentScreen('wire-review')} onGoDigital={() => setCurrentScreen('method')} customLogo={cl} />;
+      case 'err-plaid': return <PlaidFailedScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} customLogo={cl} />;
+      case 'err-savings': return <SavingsAccountScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('plaid')} customLogo={cl} />;
+      case 'err-closing': return <ClosingTooSoonScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('method')} customLogo={cl} />;
+      case 'err-funds': return <InsufficientFundsScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} customLogo={cl} />;
+      case 'err-balance': return <BalanceUnavailableScreen onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('bank-select')} customLogo={cl} />;
+      default: return <PhoneVerifyScreen onNext={() => setCurrentScreen('code')} onBack={() => {}} phoneNumber={requestData.buyerPhone} customLogo={cl} />;
     }
   };
 
@@ -1758,6 +1816,35 @@ const CashToClosePrototype = () => {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Logo Upload */}
+        <div style={{ marginBottom: '20px' }}>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '11px', color: colors.lowEmphasis, textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 8px' }}>Company Logo</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label style={{
+              padding: '8px 12px', borderRadius: '6px', border: `1px dashed ${colors.darkGrey}`, background: colors.white,
+              fontFamily: fonts.oxygen, fontSize: '12px', fontWeight: 600, color: colors.mediumEmphasis, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '6px', flex: 1,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round"/><path d="M17 8L12 3L7 8" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 3V15" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round"/></svg>
+              {customLogo ? 'Change logo' : 'Upload logo'}
+              <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
+            </label>
+            {customLogo && (
+              <button onClick={() => setCustomLogo(null)} style={{
+                padding: '8px', borderRadius: '6px', border: 'none', background: colors.lightRed, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke={colors.red} strokeWidth="2" strokeLinecap="round"/></svg>
+              </button>
+            )}
+          </div>
+          {customLogo && (
+            <div style={{ marginTop: '8px', padding: '8px', background: colors.lightestGrey, borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src={customLogo} alt="Company logo" style={{ maxHeight: '32px', maxWidth: '200px', objectFit: 'contain' }} />
+            </div>
+          )}
         </div>
 
         {/* Screen Groups */}
