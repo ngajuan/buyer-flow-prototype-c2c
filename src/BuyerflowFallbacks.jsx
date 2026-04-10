@@ -37,6 +37,20 @@ const fonts = {
   nunitoSans: "'Nunito Sans', sans-serif",
 };
 
+// Convert 9:00 AM EST to user's local timezone
+const getLocalDeliveryTime = () => {
+  // Create a date object for 9:00 AM EST (UTC-5)
+  const estDate = new Date('2026-02-02T09:00:00-05:00');
+  const hours = estDate.getHours();
+  const minutes = estDate.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const displayMinutes = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+  // Get timezone abbreviation
+  const tzAbbr = new Intl.DateTimeFormat('en-US', { timeZoneName: 'short' }).formatToParts(estDate).find(p => p.type === 'timeZoneName')?.value || 'EST';
+  return `${displayHours}${displayMinutes} ${ampm} ${tzAbbr}`;
+};
+
 // Pre-populated data from title company request
 const requestData = {
   titleCompany: 'Pinpoint Title',
@@ -49,13 +63,13 @@ const requestData = {
   buyerName: 'Sarah Johnson',
   buyerPhone: '(512) 555-0147',
   deliveryDate: 'Monday, February 2, 2026',
-  deliveryTime: '9:00 AM',
+  deliveryTime: getLocalDeliveryTime(),
   hasExistingBank: true,
   existingBank: {
     name: 'Chase',
     type: 'Checking',
-    last4: '1038',
-    balance: 52400,
+    last4: '8888',
+    balance: 50000,
   },
 };
 
@@ -151,7 +165,8 @@ const BackButton = ({ onClick }) => (
 const PrimaryButton = ({ children, onClick, disabled, fullWidth = true }) => (
   <button onClick={onClick} disabled={disabled} style={{
     width: fullWidth ? '100%' : 'auto', height: '48px', padding: '10px 16px', borderRadius: '6px', boxSizing: 'border-box',
-    border: 'none', background: disabled ? colors.lowEmphasis : colors.blue,
+    border: 'none', background: colors.blue,
+    opacity: disabled ? 0.5 : 1,
     color: colors.white, fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1,
     cursor: disabled ? 'not-allowed' : 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px',
@@ -329,7 +344,7 @@ const PhoneContainer = ({ children }) => (
 );
 
 const DeliveryBanner = ({ date, time }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: colors.lightGreen, borderRadius: '8px', marginBottom: '20px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: colors.lightGreen, borderRadius: '8px', marginBottom: '20px', textAlign: 'left' }}>
     <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: colors.white, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="4" width="18" height="18" rx="2" stroke={colors.darkGreen} strokeWidth="2"/>
@@ -627,7 +642,7 @@ const IneligibleLandingScreen = ({ onNext, customLogo }) => (
 const IneligiblePaymentMethodScreen = ({ onNext, onBack, customLogo }) => (
   <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <CoBrandedHeader mode="progress" progress={20} onBack={onBack} customLogo={customLogo} />
-    <div style={{ padding: '75px 32px 120px' }}>
+    <div style={{ padding: '91px 32px 120px' }}>
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>
@@ -678,16 +693,16 @@ const IneligiblePaymentMethodScreen = ({ onNext, onBack, customLogo }) => (
         </div>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.darkBlue, margin: '0 0 4px' }}>Download wire instructions</p>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', margin: '0 0 8px' }}>
-          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>~${WIRE_FEE}</span>
+          <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>${WIRE_FEE}</span>
           <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis }}>typical fee paid through your bank</span>
         </div>
         <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, margin: '0 0 12px', lineHeight: 1.5 }}>
-          You'll download verified wire instructions. You enter the details at your bank and verify everything manually.
+          You'll download verified wire instructions. You enter the details through your bank and verify everything manually.
         </p>
         <div style={{ background: colors.lightestGrey, borderRadius: '6px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '12px', color: colors.highEmphasis, margin: 0 }}>+ Optional wire insurance</p>
-            <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>Total with coverage: ~${WIRE_FEE + 48}</p>
+            <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>Total with coverage: ${WIRE_FEE + 48}</p>
           </div>
         </div>
       </div>
@@ -781,7 +796,7 @@ const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod
   return (
     <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <CoBrandedHeader mode="progress" progress={20} onBack={onBack} customLogo={customLogo} />
-      <div style={{ padding: '75px 32px 120px' }}>
+      <div style={{ padding: '91px 32px 120px' }}>
         {/* Header */}
         <div style={{ marginBottom: '24px' }}>
           <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>
@@ -833,7 +848,7 @@ const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod
                 <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.blue }}>${DIGITAL_FEE}</span>
                 <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, marginLeft: '6px' }}>flat fee</span>
               </div>
-              <span style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.lowEmphasis }}>${delta} more than wire</span>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.lowEmphasis }}>Only ${delta} more than wire</span>
             </div>
             <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.blue, margin: '4px 0 0' }}>Same price no matter the amount</p>
           </div>
@@ -852,16 +867,16 @@ const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod
           )}
           <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '18px', color: colors.darkBlue, margin: '0 0 4px' }}>Download wire instructions</p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', margin: '0 0 8px' }}>
-            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>~${WIRE_FEE}</span>
+            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '22px', color: colors.mediumEmphasis }}>${WIRE_FEE}</span>
             <span style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.lowEmphasis }}>typical fee paid through your bank</span>
           </div>
           <p style={{ fontFamily: fonts.oxygen, fontSize: '13px', color: colors.mediumEmphasis, margin: '0 0 12px', lineHeight: 1.5 }}>
-            You'll download verified wire instructions. You enter the details at your bank and verify everything manually.
+            You'll download verified wire instructions. You enter the details through your bank and verify everything manually.
           </p>
           <div style={{ background: colors.lightestGrey, borderRadius: '6px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '12px', color: colors.highEmphasis, margin: 0 }}>+ Optional wire insurance</p>
-              <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>Total with coverage: ~${WIRE_FEE + 48}</p>
+              <p style={{ fontFamily: fonts.oxygen, fontSize: '11px', color: colors.mediumEmphasis, margin: '2px 0 0' }}>Total with coverage: ${WIRE_FEE + 48}</p>
             </div>
           </div>
         </div>
@@ -877,31 +892,83 @@ const PaymentMethodScreen = ({ onNext, onBack, selectedMethod, setSelectedMethod
 // ============================================
 // SCREEN: KYC - Identity Verification (New Users)
 // ============================================
-const KYCScreen = ({ onNext, onBack, customLogo }) => (
-  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <CoBrandedHeader mode="progress" progress={35} onBack={onBack} customLogo={customLogo} />
-    <div style={{ padding: '75px 32px 120px' }}>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Verify your identity</p>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 20px' }}>
-        Required by federal law to prevent fraud. Your data is encrypted.
-      </p>
-      <InfoBox>This information is verified against public records. It is never shared with your title company.</InfoBox>
-      <TextField label="Legal first name" placeholder="As it appears on your ID" value="Sarah" onChange={() => {}} />
-      <TextField label="Legal last name" placeholder="As it appears on your ID" value="Johnson" onChange={() => {}} />
-      <TextField label="Email address" placeholder="your@email.com" value="sarah.johnson@gmail.com" onChange={() => {}} />
-      <TextField label="Date of birth" placeholder="MM/DD/YYYY" value="03/15/1988" onChange={() => {}} />
-      <TextField label="Last 4 digits of SSN" placeholder="••••" value="4521" onChange={() => {}} />
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.mediumEmphasis, margin: '8px 0 12px' }}>Current home address</p>
-      <TextField label="Street address" placeholder="123 Main St" value="456 Oak Lane" onChange={() => {}} />
-      <TextField label="City" placeholder="City" value="Austin" onChange={() => {}} />
-      <div style={{ display: 'flex', gap: '12px', width: '326px' }}>
-        <div style={{ flex: 1 }}><TextField label="State" placeholder="State" value="TX" onChange={() => {}} /></div>
-        <div style={{ flex: 1 }}><TextField label="ZIP" placeholder="00000" value="78732" onChange={() => {}} /></div>
+const KYCScreen = ({ onNext, onBack, customLogo }) => {
+  const [firstNameFocused, setFirstNameFocused] = useState(false);
+  return (
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <CoBrandedHeader mode="progress" progress={35} onBack={onBack} customLogo={customLogo} />
+      <div style={{ padding: '91px 32px 120px' }}>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 20px' }}>Verify your identity</p>
+
+        {/* Security banner */}
+        <div style={{
+          display: 'flex', gap: '12px', padding: '14px 16px', background: colors.lightestBlue, borderRadius: '8px',
+          border: `1px solid ${colors.lighterBlue}`, marginBottom: '20px', boxSizing: 'border-box', width: '100%',
+        }}>
+          <svg width="36" height="38" viewBox="0 0 52 54" fill="none" style={{ flexShrink: 0 }}>
+            <path d="M45.2935 28.1438C43.4193 34.8347 38.9338 44.352 28.2121 52.209C19.6266 45.9291 13.8984 37.89 11.1732 28.2929C9.60562 22.7712 9.52149 18.2314 9.58752 16.2166C20.5861 12.7119 25.9448 8.96869 28.2121 6.98047C30.4793 8.96869 35.838 12.713 46.8387 16.2166C46.9069 18.2059 46.8292 22.6594 45.2935 28.1438Z" fill="white"/>
+            <path d="M45.2934 28.1438C43.4191 34.8347 38.9336 44.352 28.2119 52.209V6.98047C30.4791 8.96869 35.8379 12.713 46.8386 16.2166C46.9067 18.2059 46.829 22.6594 45.2934 28.1438Z" fill="#DEEFF9"/>
+            <path d="M29.199 51.2564L28.2112 50.0643C20.4415 44.3808 15.2563 37.1041 12.79 28.4186C11.3715 23.4209 11.2959 19.3124 11.3555 17.4892C21.3094 14.3168 26.1591 10.9293 28.2112 9.12953L29.199 8.14756V6.74037L28.2112 5.25C27.7 5.25 27.2411 5.49493 26.9407 5.90813C26.7735 6.11046 22.9132 10.6194 9.36197 14.7651C8.75496 14.9504 8.31514 15.4786 8.24273 16.1101C8.2161 16.3391 7.62081 21.8086 9.67506 29.1449C10.8784 33.4408 12.7474 37.4982 15.2297 41.2052C18.3255 45.8291 22.385 49.911 27.2975 53.3368C27.5722 53.5285 27.8917 53.6244 28.2112 53.6244L29.199 52.3393V51.2564Z" fill="#102754" fillOpacity="0.9"/>
+            <path d="M46.7481 29.1449C45.5447 33.4408 43.6757 37.4982 41.1934 41.2052C38.0976 45.8291 34.0381 49.911 29.1256 53.3368C28.8509 53.5285 28.5314 53.6244 28.2119 53.6244V50.0643C37.9155 42.9527 41.9751 34.3396 43.6715 28.2833C45.0612 23.3197 45.1315 19.2889 45.0697 17.4892C35.1137 14.3179 30.264 10.9293 28.2119 9.12953V5.25C28.7231 5.25 29.1821 5.49493 29.4824 5.90813C29.6496 6.11046 33.5099 10.6194 47.0612 14.7651C47.6682 14.9504 48.108 15.4786 48.1804 16.1101C48.207 16.3391 48.8023 21.8086 46.7481 29.1449Z" fill="#102754"/>
+            <path d="M35.0499 22.8194V25.2933C35.0499 26.175 34.3343 26.8907 33.4525 26.8907C32.5697 26.8907 31.8551 26.175 31.8551 25.2933V22.8194C31.8551 20.8099 30.2205 19.1753 28.2109 19.1753V15.9805C31.9819 15.9805 35.0499 19.0485 35.0499 22.8194Z" fill="#156FBE"/>
+            <path d="M21.3554 22.8194V25.2933C21.3554 26.175 22.0711 26.8907 22.9528 26.8907C23.8357 26.8907 24.5502 26.175 24.5502 25.2933V22.8194C24.5502 20.8099 26.1849 19.1753 28.1944 19.1753L29.4502 17.6758L28.1944 15.9805C24.4235 15.9805 21.3554 19.0485 21.3554 22.8194Z" fill="#156FBE"/>
+            <path d="M34.0898 23.6934C35.6956 23.6935 37.0009 24.9988 37.001 26.6045V35.7529C37.0007 37.3585 35.6955 38.6639 34.0898 38.6641H28.2129L28.2119 38.666H22.333C20.7273 38.6658 19.4219 37.3607 19.4219 35.7549V26.6074C19.4219 25.0016 20.7273 23.6955 22.333 23.6953H28.2109V23.6934H34.0898Z" fill="#156FBE"/>
+            <path d="M28.2109 28.8066C29.0926 28.8068 29.8076 29.5215 29.8076 30.4043V31.957C29.8074 32.8397 29.0916 33.5527 28.21 33.5527C27.3286 33.5523 26.6135 32.8395 26.6133 31.957V30.4043C26.6133 29.5215 27.3292 28.8066 28.2109 28.8066Z" fill="#102754"/>
+            <path d="M42.9131 0.625V6.565" stroke="#156FBE" strokeWidth="1.25" strokeLinecap="round"/>
+            <path d="M45.8838 3.5957L39.9438 3.5957" stroke="#156FBE" strokeWidth="1.25" strokeLinecap="round"/>
+            <path d="M2.93848 37.6289V42.2545" stroke="#156FBE" strokeWidth="1.25" strokeLinecap="round"/>
+            <path d="M5.25098 39.9434L0.625353 39.9434" stroke="#156FBE" strokeWidth="1.25" strokeLinecap="round"/>
+            <ellipse cx="10.1661" cy="43.1212" rx="0.867304" ry="0.867303" fill="#B7DEFF"/>
+            <ellipse cx="41.7501" cy="49.3224" rx="0.867304" ry="0.867303" fill="#B7DEFF"/>
+            <ellipse cx="46.7478" cy="43.3201" rx="1.865" ry="1.865" fill="#B7DEFF"/>
+            <ellipse cx="3.72598" cy="30.725" rx="2.1" ry="2.1" fill="#B7DEFF"/>
+            <ellipse cx="50.2423" cy="8.72086" rx="1.15641" ry="1.1564" fill="#B7DEFF"/>
+          </svg>
+          <div style={{ fontFamily: fonts.oxygen, fontSize: '14.4px', lineHeight: 1.5, color: colors.highEmphasis, flex: 1 }}>
+            This information is verified against public records. It is never shared with your title company.{' '}
+            <a href="https://certifidhelpcenter.zendesk.com/hc/en-us/articles/18426417319579-How-do-I-know-this-is-legitimate" target="_blank" rel="noopener noreferrer" style={{ color: colors.blue, fontWeight: 700, textDecoration: 'none' }}>Read more</a>
+          </div>
+        </div>
+
+        {/* Legal first name with focus helper text */}
+        <div style={{ marginBottom: '16px' }}>
+          <label style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14.4px', lineHeight: 1.5, color: colors.highEmphasis, display: 'block', marginBottom: '4.8px' }}>First name</label>
+          <input
+            placeholder="Legal first name"
+            defaultValue="Sarah"
+            onFocus={() => setFirstNameFocused(true)}
+            onBlur={() => setTimeout(() => setFirstNameFocused(false), 150)}
+            style={{
+              width: '100%', height: '40px', padding: '8px 12px', borderRadius: '6px',
+              border: `2px solid ${firstNameFocused ? '#B7DEFF' : colors.darkGrey}`, background: colors.white,
+              fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5,
+              boxSizing: 'border-box', outline: 'none', color: colors.highEmphasis,
+              boxShadow: firstNameFocused ? '0 0 0 3px rgba(183, 222, 255, 0.4)' : 'none',
+            }}
+          />
+          {firstNameFocused && (
+            <p style={{ fontFamily: fonts.oxygen, fontSize: '14px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '6px 0 0' }}>
+              If you're paying for a business, be sure to enter your <strong style={{ color: colors.highEmphasis }}>personal information</strong>. Entering business details could delay payment.
+            </p>
+          )}
+        </div>
+
+        <TextField label="Legal last name" placeholder="As it appears on your ID" value="Johnson" onChange={() => {}} />
+        <TextField label="Email address" placeholder="your@email.com" value="sarah.johnson@gmail.com" onChange={() => {}} />
+        <TextField label="Date of birth" placeholder="MM/DD/YYYY" value="03/15/1988" onChange={() => {}} />
+        <TextField label="Last 4 digits of SSN" placeholder="••••" value="4521" onChange={() => {}} />
+        <div style={{ height: '1px', background: colors.grey, margin: '8px 0 20px' }} />
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: '#555555', margin: '0 0 12px' }}>Current home address</p>
+        <TextField label="Address line" placeholder="123 Main St" value="456 Oak Lane" onChange={() => {}} />
+        <TextField label="Apartment, suite, etc." placeholder="Optional" value="" onChange={() => {}} />
+        <TextField label="City" placeholder="City" value="Austin" onChange={() => {}} />
+        <TextField label="State" placeholder="State" value="TX" onChange={() => {}} />
+        <TextField label="ZIP" placeholder="00000" value="78732" onChange={() => {}} />
+        <PrimaryButton onClick={onNext}>Verify Identity</PrimaryButton>
       </div>
-      <PrimaryButton onClick={onNext}>Verify Identity</PrimaryButton>
     </div>
-  </div>
-);
+  );
+};
 
 // ============================================
 // SCREEN: KYC Verifying (Loading)
@@ -911,9 +978,27 @@ const KYCVerifyingScreen = ({ onNext }) => {
   return (
     <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '200px' }}>
-        <Spinner />
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.darkBlue, marginTop: '32px' }}>Verifying your identity...</p>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.mediumEmphasis, marginTop: '8px' }}>This only takes a moment</p>
+        <div style={{ position: 'relative', width: '143px', height: '143px' }}>
+          {/* Static inner elements */}
+          <svg width="143" height="143" viewBox="0 0 143 143" fill="none" style={{ position: 'absolute', top: 0, left: 0 }}>
+            <circle cx="71.3604" cy="71.5" r="46.5" fill="#F3F3F3"/>
+            <path d="M68.1379 80.304C68.4416 80.0066 68.6441 79.9075 69.0491 80.304C70.8717 82.0881 72.593 83.8722 74.4156 85.5572C74.8206 85.9537 74.7193 86.1519 74.4156 86.4493C72.593 88.1343 70.8717 89.9184 69.0491 91.7025C68.6441 92.099 68.4416 92.099 68.0366 91.7025C66.2141 89.9184 64.4928 88.1343 62.6702 86.4493C62.3664 86.1519 62.3664 85.9537 62.6702 85.5572C62.8727 85.359 63.1765 85.1608 63.379 84.8634L68.1379 80.304Z" fill="#555555"/>
+            <path d="M54.0635 57.4078C49.7096 63.5531 49.8108 71.5817 54.266 77.727C54.7722 78.4208 55.3798 79.0155 55.9873 79.7094L62.0625 73.7623C58.6199 70.2932 58.6199 64.7426 62.1637 61.2734C65.7076 57.8043 71.479 57.8043 75.0229 61.2734C78.3642 64.5443 78.5667 69.7976 75.5291 73.2667C75.5291 73.4649 75.4279 73.5641 75.3266 73.6632C77.3517 75.6455 79.3767 77.6279 81.503 79.7094C81.7056 79.5111 81.9081 79.3129 82.1106 79.1147C85.8569 75.4473 89.7045 71.6808 93.4509 68.0134C93.9572 67.5179 93.8559 67.3196 93.4509 66.9231C89.2995 62.9584 85.3507 59.0928 81.4018 55.2272C80.693 54.5334 79.9843 53.9387 79.1742 53.4431C71.2765 47.5951 59.6324 49.3793 54.0635 57.4078Z" fill="#156FBE"/>
+          </svg>
+          {/* Spinning gradient stroke ring */}
+          <svg width="143" height="143" viewBox="0 0 143 143" fill="none" style={{ position: 'absolute', top: 0, left: 0, animation: 'spin 1.5s linear infinite' }}>
+            <circle cx="71.4697" cy="71.4699" r="56.452" transform="rotate(-120 71.4697 71.4699)" stroke="url(#paint0_linear_kyc)" strokeWidth="3.80575"/>
+            <defs>
+              <linearGradient id="paint0_linear_kyc" x1="108.3" y1="45.6527" x2="121.827" y2="99.4882" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#2E76B5"/>
+                <stop offset="0.0001" stopColor="#2E76B5"/>
+                <stop offset="1" stopColor="#61D690"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', color: colors.darkBlue, marginTop: '32px', marginBottom: 0 }}>Verifying your identity...</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.mediumEmphasis, marginTop: '8px', textAlign: 'center', padding: '0 32px' }}>This may take a few seconds, do not refresh this page</p>
       </div>
       <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
     </div>
@@ -944,27 +1029,38 @@ const KYCFailedScreen = ({ onWire, onBack }) => (
 // ============================================
 // SCREEN: Bank Connection (Plaid - New Users)
 // ============================================
-const PlaidBankConnectionScreen = ({ onNext, onBack, customLogo }) => {
+const PlaidBankConnectionScreen = ({ onNext, onBack, onPlaidConnect, customLogo }) => {
   const [connected, setConnected] = useState(false);
+  const [plaidHover, setPlaidHover] = useState(false);
+  const [plaidActive, setPlaidActive] = useState(false);
   return (
     <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <CoBrandedHeader mode="progress" progress={50} onBack={onBack} customLogo={customLogo} />
-      <div style={{ padding: '75px 32px 120px' }}>
+      <div style={{ padding: '91px 32px 120px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Connect your bank</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
           Securely link your checking account to make your payment.
         </p>
         {!connected ? (
           <>
-            <div onClick={() => setConnected(true)} style={{
-              padding: '20px', borderRadius: '12px', border: `1px solid ${colors.darkGrey}`, cursor: 'pointer', marginBottom: '20px',
-              display: 'flex', alignItems: 'center', gap: '16px',
-            }}>
-              <div style={{ width: '48px', height: '48px', background: colors.highEmphasis, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                  <circle cx="6" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/>
-                  <circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/>
-                  <circle cx="6" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>
+            <div
+              onClick={() => onPlaidConnect ? onPlaidConnect() : setConnected(true)}
+              onMouseEnter={() => setPlaidHover(true)}
+              onMouseLeave={() => { setPlaidHover(false); setPlaidActive(false); }}
+              onMouseDown={() => setPlaidActive(true)}
+              onMouseUp={() => setPlaidActive(false)}
+              style={{
+                padding: '20px', borderRadius: '12px', cursor: 'pointer', marginBottom: '20px',
+                display: 'flex', alignItems: 'center', gap: '16px',
+                border: plaidActive ? `2px solid ${colors.blue}` : plaidHover ? `1.5px solid ${colors.darkGrey}` : `1px solid ${colors.darkGrey}`,
+                background: plaidActive ? colors.lightestBlue : plaidHover ? colors.lightestGrey : colors.white,
+                boxShadow: plaidHover && !plaidActive ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="40" height="40" viewBox="0 0 47 48" fill="none">
+                  <path d="M18.637 0L4.09 3.81.081 18.439l5.014 5.148L0 28.65l3.773 14.693 14.484 4.047 5.096-5.064 5.014 5.147 14.547-3.81 4.008-14.63-5.013-5.146 5.095-5.063L43.231 4.13 28.745.083l-5.094 5.063L18.637 0zM9.71 6.624l7.663-2.008 3.351 3.44-4.887 4.856L9.71 6.624zm16.822 1.478l3.405-3.383 7.63 2.132-6.227 6.187-4.808-4.936zM4.672 17.238l2.111-7.705 6.125 6.288-4.886 4.856-3.35-3.44zm29.547-1.243l6.227-6.189 1.986 7.74-3.404 3.384-4.809-4.935zm-15.502-.127l4.887-4.856 4.807 4.936-4.886 4.856-4.808-4.936zm-7.814 7.765l4.886-4.856 4.81 4.936-4.888 4.856-4.808-4.936zm15.503.127l4.886-4.856L36.1 23.84l-4.887 4.856-4.807-4.936zM4.57 29.927l3.406-3.385 4.807 4.937-6.225 6.186-1.988-7.738zm14.021 1.598l4.887-4.856 4.808 4.936-4.886 4.856-4.809-4.936zm15.502.128l4.887-4.856 3.351 3.439-2.11 7.705-6.128-6.288zm-24.656 8.97l6.226-6.189 4.81 4.936-3.406 3.385-7.63-2.133zm16.843-1.206l4.886-4.856 6.126 6.289-7.662 2.007-3.35-3.44z" fill="#111"/>
                 </svg>
               </div>
               <div style={{ flex: 1 }}>
@@ -1000,6 +1096,97 @@ const PlaidBankConnectionScreen = ({ onNext, onBack, customLogo }) => {
 };
 
 // ============================================
+// SCREEN: Plaid Connection Modal (overlay)
+// ============================================
+const PlaidModalScreen = ({ onNext, onBack, customLogo }) => (
+  <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', position: 'relative' }}>
+    <CoBrandedHeader mode="progress" progress={50} onBack={onBack} customLogo={customLogo} />
+    {/* Dimmed background showing the bank connection screen content */}
+    <div style={{ padding: '91px 32px 120px', filter: 'blur(2px)', opacity: 0.3 }}>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Connect your bank</p>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
+        Securely link your checking account to make your payment.
+      </p>
+    </div>
+    {/* Dark overlay */}
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 10, display: 'flex', alignItems: 'flex-end', borderRadius: '47px' }}>
+      {/* Plaid modal */}
+      <div style={{
+        background: colors.white, borderRadius: '24px 24px 0 0', width: '100%',
+        padding: '20px 24px 40px', boxSizing: 'border-box',
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.15)',
+      }}>
+        {/* Close button */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          <div onClick={onBack} style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round"/></svg>
+          </div>
+        </div>
+
+        {/* Logo cluster */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: colors.white, border: `1px solid ${colors.grey}`, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill={colors.blue}><circle cx="12" cy="12" r="10"/><path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" fill="none"/></svg>
+          </div>
+          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: colors.white, border: `1px solid ${colors.grey}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-8px', zIndex: 2 }}>
+            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '8px', color: colors.blue }}>CERTIFI</span>
+          </div>
+          <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: colors.white, border: `1px solid ${colors.grey}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-8px', zIndex: 3 }}>
+            <svg width="28" height="28" viewBox="0 0 120 120" fill="none">
+              <path d="M67 5L37 35L49 47L61 35L73 47L61 59L73 71L85 59L97 71L73 95L61 83L49 95L61 107L37 83L25 95L49 119H61L115 65V53L67 5Z" fill="#111"/>
+              <path d="M49 71L37 59L5 91V103L17 115L49 83L37 71L25 83L13 71L25 59L37 71L49 59L37 47L13 23L5 31V43L37 75" fill="#111"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* Title */}
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '18px', color: colors.highEmphasis, textAlign: 'center', margin: '0 0 24px', lineHeight: 1.4 }}>
+          CertifID uses <strong>Plaid</strong> to connect your account
+        </p>
+
+        {/* Features card */}
+        <div style={{ background: colors.lightestGrey, borderRadius: '12px', padding: '20px', marginBottom: '24px', border: `1px solid ${colors.grey}` }}>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px', flexShrink: 0 }}>
+              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '15px', color: colors.highEmphasis, margin: '0 0 4px' }}>Connect in seconds</p>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: 0, lineHeight: 1.5 }}>8000+ apps trust Plaid to quickly connect to financial institutions</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginTop: '2px', flexShrink: 0 }}>
+              <path d="M12 2L3 7V12C3 17.25 6.75 22.13 12 23C17.25 22.13 21 17.25 21 12V7L12 2Z" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M9 12L11 14L15 10" stroke={colors.highEmphasis} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '15px', color: colors.highEmphasis, margin: '0 0 4px' }}>Keep your data safe</p>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: 0, lineHeight: 1.5 }}>Plaid uses best-in-class encryption to help protect your data</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ height: '1px', background: colors.grey, marginBottom: '16px' }} />
+
+        {/* Privacy text */}
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', color: colors.mediumEmphasis, textAlign: 'center', margin: '0 0 20px', lineHeight: 1.5 }}>
+          By continuing, you agree to Plaid's <span style={{ textDecoration: 'underline' }}>Privacy Policy</span> and to receiving updates on plaid.com
+        </p>
+
+        {/* Continue button */}
+        <button onClick={onNext} style={{
+          width: '100%', height: '52px', borderRadius: '26px', border: 'none',
+          background: '#111', color: colors.white, fontFamily: fonts.oxygen, fontWeight: 700,
+          fontSize: '17px', cursor: 'pointer',
+        }}>Continue</button>
+      </div>
+    </div>
+  </div>
+);
+
+// ============================================
 // SCREEN: Plaid Connection Failed
 // ============================================
 const PlaidFailedScreen = ({ onRetry, onWire, onBack }) => (
@@ -1020,47 +1207,52 @@ const PlaidFailedScreen = ({ onRetry, onWire, onBack }) => (
 // ============================================
 // SCREEN: Bank Account Selection (Returning User)
 // ============================================
-const BankAccountScreen = ({ onNext, onBack, useExisting, setUseExisting, customLogo }) => (
+const BankAccountScreen = ({ onNext, onBack, useExisting, setUseExisting, onPlaidConnect, showPreviousLabel = true, customLogo }) => (
   <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <CoBrandedHeader mode="progress" progress={50} onBack={onBack} customLogo={customLogo} />
-    <div style={{ padding: '75px 32px 120px' }}>
+    <div style={{ padding: '91px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Select bank account</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
         Choose which account to use for your payment.
       </p>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.mediumEmphasis, margin: '0 0 12px' }}>Previously used</p>
+      {showPreviousLabel && (
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.mediumEmphasis, margin: '0 0 12px' }}>Previously used</p>
+      )}
       <div onClick={() => setUseExisting(true)} style={{
-        padding: '16px', borderRadius: '8px', marginBottom: '16px', cursor: 'pointer',
-        border: `2px solid ${useExisting ? colors.blue : colors.grey}`,
-        background: useExisting ? colors.lightestBlue : colors.white,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: 'white', fontWeight: 700, fontSize: '18px' }}>C</span>
+            padding: '16px 12px', borderRadius: '6px', marginBottom: '16px', cursor: 'pointer',
+            border: '1px solid #DDDDDD',
+            background: colors.white,
+            display: 'flex', alignItems: 'center', gap: '12px',
+            boxSizing: 'border-box', width: '325px',
+          }}>
+            {/* Radio button */}
+            <div style={{
+              width: '20px', height: '20px', borderRadius: '999px', flexShrink: 0,
+              border: useExisting ? '2px solid #156FBE' : '2px solid #DDDDDD',
+              background: colors.white,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {useExisting && (
+                <div style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#156FBE' }} />
+              )}
+            </div>
+            {/* Text container */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14.4px', lineHeight: '150%', color: colors.highEmphasis, margin: 0 }}>{requestData.existingBank.name} {requestData.existingBank.type} **{requestData.existingBank.last4}</p>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14.4px', lineHeight: '150%', color: colors.mediumEmphasis, margin: 0 }}>Balance: ${requestData.existingBank.balance.toLocaleString()}</p>
+            </div>
+            {/* Bank logo (Chase) */}
+            <div style={{ width: '42px', height: '42px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="42" height="42" viewBox="0 0 55 55" fill="none">
+                <path d="M19.667 0C18.595 0 17.727 0.869 17.727 1.94L17.727 15.546L53.668 15.546L37.301 0.001L19.667 0" fill="#117ACA"/>
+                <path d="M54.983 19.663C54.983 18.589 54.12 17.724 53.041 17.724L39.439 17.724L39.439 53.666L54.977 37.291L54.983 19.663" fill="#117ACA"/>
+                <path d="M35.318 54.968C36.388 54.968 37.257 54.098 37.257 53.024L37.257 39.423L1.314 39.423L17.684 54.965L35.318 54.968" fill="#117ACA"/>
+                <path d="M0 35.308C0 36.38 0.869 37.254 1.944 37.254L15.544 37.254L15.544 1.309L0.003 17.679L0 35.308" fill="#117ACA"/>
+              </svg>
+            </div>
           </div>
-          <div>
-            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.highEmphasis, margin: 0 }}>{requestData.existingBank.name} {requestData.existingBank.type} **{requestData.existingBank.last4}</p>
-            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: colors.mediumEmphasis, margin: '4px 0 0' }}>Balance: ${requestData.existingBank.balance.toLocaleString()}</p>
-          </div>
-        </div>
-        {useExisting && (
-          <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
-          </div>
-        )}
-      </div>
-      <div onClick={() => setUseExisting(false)} style={{
-        padding: '16px', borderRadius: '8px', marginBottom: '24px', cursor: 'pointer',
-        border: `2px solid ${!useExisting ? colors.blue : colors.grey}`,
-        background: !useExisting ? colors.lightestBlue : colors.white,
-        display: 'flex', alignItems: 'center', gap: '12px',
-      }}>
-        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: colors.lightestGrey, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke={colors.mediumEmphasis} strokeWidth="2"/><path d="M12 8V16M8 12H16" stroke={colors.mediumEmphasis} strokeWidth="2" strokeLinecap="round"/></svg>
-        </div>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.blue, margin: 0 }}>Connect a different bank account</p>
-      </div>
+          <TextLink onClick={() => onPlaidConnect ? onPlaidConnect() : setUseExisting(false)}>Use a different account</TextLink>
+      <div style={{ marginBottom: '24px' }} />
       <InfoBox><strong>Important:</strong> Please use a checking account. Savings accounts may cause payment delays.</InfoBox>
       <PrimaryButton onClick={onNext}>Continue</PrimaryButton>
     </div>
@@ -1071,20 +1263,37 @@ const BankAccountScreen = ({ onNext, onBack, useExisting, setUseExisting, custom
 // SCREEN: Eligibility Check (Loading)
 // ============================================
 const EligibilityCheckScreen = ({ onNext }) => {
-  const [checks, setChecks] = useState([false, false, false]);
+  const [checks, setChecks] = useState([false, false]);
   useEffect(() => {
-    const t1 = setTimeout(() => setChecks([true, false, false]), 800);
-    const t2 = setTimeout(() => setChecks([true, true, false]), 1600);
-    const t3 = setTimeout(() => setChecks([true, true, true]), 2400);
-    const t4 = setTimeout(onNext, 3200);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+    const t1 = setTimeout(() => setChecks([true, false]), 1100);
+    const t2 = setTimeout(() => setChecks([true, true]), 2200);
+    const t3 = setTimeout(onNext, 3200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [onNext]);
 
-  const items = ['Closing date allows delivery', 'Amount within transfer limits', 'Account balance verified'];
+  const items = ['Closing date allows delivery', 'Account balance verified', 'Verifying account type'];
   return (
     <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '180px' }}>
-        <Spinner />
+        <div style={{ position: 'relative', width: '143px', height: '143px' }}>
+          {/* Static inner elements */}
+          <svg width="143" height="143" viewBox="0 0 143 143" fill="none" style={{ position: 'absolute', top: 0, left: 0 }}>
+            <circle cx="71.3604" cy="71.5" r="46.5" fill="#F3F3F3"/>
+            <path d="M68.1379 80.304C68.4416 80.0066 68.6441 79.9075 69.0491 80.304C70.8717 82.0881 72.593 83.8722 74.4156 85.5572C74.8206 85.9537 74.7193 86.1519 74.4156 86.4493C72.593 88.1343 70.8717 89.9184 69.0491 91.7025C68.6441 92.099 68.4416 92.099 68.0366 91.7025C66.2141 89.9184 64.4928 88.1343 62.6702 86.4493C62.3664 86.1519 62.3664 85.9537 62.6702 85.5572C62.8727 85.359 63.1765 85.1608 63.379 84.8634L68.1379 80.304Z" fill="#555555"/>
+            <path d="M54.0635 57.4078C49.7096 63.5531 49.8108 71.5817 54.266 77.727C54.7722 78.4208 55.3798 79.0155 55.9873 79.7094L62.0625 73.7623C58.6199 70.2932 58.6199 64.7426 62.1637 61.2734C65.7076 57.8043 71.479 57.8043 75.0229 61.2734C78.3642 64.5443 78.5667 69.7976 75.5291 73.2667C75.5291 73.4649 75.4279 73.5641 75.3266 73.6632C77.3517 75.6455 79.3767 77.6279 81.503 79.7094C81.7056 79.5111 81.9081 79.3129 82.1106 79.1147C85.8569 75.4473 89.7045 71.6808 93.4509 68.0134C93.9572 67.5179 93.8559 67.3196 93.4509 66.9231C89.2995 62.9584 85.3507 59.0928 81.4018 55.2272C80.693 54.5334 79.9843 53.9387 79.1742 53.4431C71.2765 47.5951 59.6324 49.3793 54.0635 57.4078Z" fill="#156FBE"/>
+          </svg>
+          {/* Spinning gradient stroke ring */}
+          <svg width="143" height="143" viewBox="0 0 143 143" fill="none" style={{ position: 'absolute', top: 0, left: 0, animation: 'spin 1.5s linear infinite' }}>
+            <circle cx="71.4697" cy="71.4699" r="56.452" transform="rotate(-120 71.4697 71.4699)" stroke="url(#paint0_linear_elig)" strokeWidth="3.80575"/>
+            <defs>
+              <linearGradient id="paint0_linear_elig" x1="108.3" y1="45.6527" x2="121.827" y2="99.4882" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#2E76B5"/>
+                <stop offset="0.0001" stopColor="#2E76B5"/>
+                <stop offset="1" stopColor="#61D690"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.darkBlue, marginTop: '32px', textAlign: 'center' }}>Checking eligibility...</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.mediumEmphasis, marginTop: '8px', textAlign: 'center' }}>Verifying your payment can be processed</p>
         <div style={{ marginTop: '40px', padding: '0 40px', width: '100%', boxSizing: 'border-box' }}>
@@ -1191,7 +1400,7 @@ const SavingsAccountScreen = ({ onRetry, onWire, onBack }) => (
       <div style={{ margin: '20px 0 24px', display: 'flex', justifyContent: 'center' }}><HouseWithWarning /></div>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', color: colors.darkBlue, margin: '0 0 8px' }}>Checking account required</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.mediumEmphasis, margin: '0 0 24px', lineHeight: 1.5 }}>
-        The account you selected is a savings account. Only checking accounts can be used for this payment.
+        The account you selected is not a checking account. Only checking accounts can be used for this payment.
       </p>
       <div style={{ background: colors.lightRed, border: `1px solid #fecaca`, borderRadius: '8px', padding: '14px 16px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.red}><circle cx="12" cy="12" r="10"/><path d="M15 9L9 15M9 9L15 15" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
@@ -1284,14 +1493,14 @@ const ReviewPaymentScreen = ({ onNext, onBack, checkboxChecked, setCheckboxCheck
             label={`I confirm I have at least $${totalAmount.toLocaleString()} available in my account ending in **${requestData.existingBank.last4}`}
           />
         </div>
+        <div style={{ marginLeft: '8px' }}>
+          <PrimaryButton onClick={onNext} disabled={!checkboxChecked}>Pay ${totalAmount.toLocaleString()} Now</PrimaryButton>
+        </div>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '13px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '20px 8px', width: '326px' }}>
           By clicking "Pay Now", you authorize CertifID to debit your account for the total amount. You agree to our{' '}
           <span style={{ color: colors.blue, textDecoration: 'underline' }}>Terms of Service</span> and{' '}
           <span style={{ color: colors.blue, textDecoration: 'underline' }}>Privacy Policy</span>.
         </p>
-        <div style={{ marginLeft: '8px' }}>
-          <PrimaryButton onClick={onNext} disabled={!checkboxChecked}>Pay ${totalAmount.toLocaleString()} Now</PrimaryButton>
-        </div>
       </div>
     </div>
   );
@@ -1305,7 +1514,25 @@ const ProcessingScreen = ({ onNext }) => {
   return (
     <div style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '200px' }}>
-        <Spinner />
+        <div style={{ position: 'relative', width: '143px', height: '143px' }}>
+          {/* Static inner elements */}
+          <svg width="143" height="143" viewBox="0 0 143 143" fill="none" style={{ position: 'absolute', top: 0, left: 0 }}>
+            <circle cx="71.3604" cy="71.5" r="46.5" fill="#F3F3F3"/>
+            <path d="M68.1379 80.304C68.4416 80.0066 68.6441 79.9075 69.0491 80.304C70.8717 82.0881 72.593 83.8722 74.4156 85.5572C74.8206 85.9537 74.7193 86.1519 74.4156 86.4493C72.593 88.1343 70.8717 89.9184 69.0491 91.7025C68.6441 92.099 68.4416 92.099 68.0366 91.7025C66.2141 89.9184 64.4928 88.1343 62.6702 86.4493C62.3664 86.1519 62.3664 85.9537 62.6702 85.5572C62.8727 85.359 63.1765 85.1608 63.379 84.8634L68.1379 80.304Z" fill="#555555"/>
+            <path d="M54.0635 57.4078C49.7096 63.5531 49.8108 71.5817 54.266 77.727C54.7722 78.4208 55.3798 79.0155 55.9873 79.7094L62.0625 73.7623C58.6199 70.2932 58.6199 64.7426 62.1637 61.2734C65.7076 57.8043 71.479 57.8043 75.0229 61.2734C78.3642 64.5443 78.5667 69.7976 75.5291 73.2667C75.5291 73.4649 75.4279 73.5641 75.3266 73.6632C77.3517 75.6455 79.3767 77.6279 81.503 79.7094C81.7056 79.5111 81.9081 79.3129 82.1106 79.1147C85.8569 75.4473 89.7045 71.6808 93.4509 68.0134C93.9572 67.5179 93.8559 67.3196 93.4509 66.9231C89.2995 62.9584 85.3507 59.0928 81.4018 55.2272C80.693 54.5334 79.9843 53.9387 79.1742 53.4431C71.2765 47.5951 59.6324 49.3793 54.0635 57.4078Z" fill="#156FBE"/>
+          </svg>
+          {/* Spinning gradient stroke ring */}
+          <svg width="143" height="143" viewBox="0 0 143 143" fill="none" style={{ position: 'absolute', top: 0, left: 0, animation: 'spin 1.5s linear infinite' }}>
+            <circle cx="71.4697" cy="71.4699" r="56.452" transform="rotate(-120 71.4697 71.4699)" stroke="url(#paint0_linear_proc)" strokeWidth="3.80575"/>
+            <defs>
+              <linearGradient id="paint0_linear_proc" x1="108.3" y1="45.6527" x2="121.827" y2="99.4882" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#2E76B5"/>
+                <stop offset="0.0001" stopColor="#2E76B5"/>
+                <stop offset="1" stopColor="#61D690"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.darkBlue, marginTop: '32px', textAlign: 'center' }}>Processing your payment...</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.mediumEmphasis, marginTop: '8px', textAlign: 'center' }}>This may take a moment</p>
       </div>
@@ -1343,34 +1570,60 @@ const SuccessScreen = ({ onShowShare }) => {
     <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <div style={{ padding: '30px 32px 120px', textAlign: 'center' }}>
         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}><HouseWithCheck /></div>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>Payment submitted to {requestData.titleCompany}!</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px', textAlign: 'left' }}>Your payment is on its way</p>
         <DeliveryBanner date={requestData.deliveryDate} time={requestData.deliveryTime} />
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>You'll receive an email when your payment is complete.</p>
-        <div style={{ width: '326px', background: colors.white, borderRadius: '12px', border: `1px solid ${colors.grey}`, padding: '20px', boxSizing: 'border-box', textAlign: 'left', margin: '0 auto' }}>
-          <Badge>Cash to Close</Badge>
-          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '28px', lineHeight: 1.2, color: colors.darkBlue, margin: '12px 0 16px' }}>${requestData.paymentAmount.toLocaleString()}.00</p>
-          <p style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 8px' }}>{requestData.propertyAddress}</p>
-          <p style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 8px' }}>{requestData.existingBank.name} - {requestData.existingBank.type} **{requestData.existingBank.last4}</p>
-          <p style={{ fontFamily: fonts.oxygen, fontSize: '12px', color: colors.mediumEmphasis, margin: '0 0 8px', wordBreak: 'break-all' }}>ID: {transactionId}</p>
-          <p style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.highEmphasis, margin: 0 }}>{requestData.office}</p>
-          <div style={{ height: '1px', background: colors.grey, margin: '16px 0' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>Payment</span>
-            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis }}>${requestData.paymentAmount.toLocaleString()}.00</span>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px', textAlign: 'left' }}>We've sent an email confirmation with a summary of your payment. You'll receive another email when your payment is complete.</p>
+        <div style={{ width: '326px', textAlign: 'left', margin: '0 auto', position: 'relative' }}>
+          <div style={{ borderRadius: '6px 6px 0 0', padding: '1.5px', paddingBottom: 0, background: 'linear-gradient(180deg, #2E76B5 0%, #61D690 100%)', boxSizing: 'border-box', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <div style={{ background: colors.white, borderRadius: '5px 5px 0 0', overflow: 'hidden' }}>
+          <div style={{ padding: '25px 22px 0' }}>
+            <Badge>Cash to Close</Badge>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '32px', lineHeight: 1.5, color: colors.darkBlue, margin: '12px 0 18px' }}>${requestData.paymentAmount.toLocaleString()}.00</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <p style={{ fontFamily: fonts.oxygen, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: 0 }}>{requestData.propertyAddress}</p>
+              <p style={{ fontFamily: fonts.oxygen, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: 0 }}>{requestData.existingBank.name} - {requestData.existingBank.type} **{requestData.existingBank.last4}</p>
+              <p style={{ fontFamily: fonts.oxygen, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: 0 }}>{requestData.office}</p>
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>Transfer fee</span>
-            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis }}>$48.00</span>
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid #B7DEFF', margin: '18px 22px' }} />
+          <div style={{ padding: '0 22px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '24px', marginBottom: '8px' }}>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis }}>Payment amount</span>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis }}>${requestData.paymentAmount.toLocaleString()}.00</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '24px', marginBottom: '8px' }}>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis }}>Processing fee</span>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis }}>$48.00</span>
+            </div>
           </div>
-          <div style={{ height: '1px', background: colors.grey, margin: '16px 0' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '15px', color: colors.highEmphasis }}>Total</span>
-            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '15px', color: colors.darkBlue }}>${totalAmount.toLocaleString()}.00</span>
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid #B7DEFF', margin: '18px 22px' }} />
+          <div style={{ padding: '0 22px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '24px' }}>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis }}>Total</span>
+              <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis }}>${totalAmount.toLocaleString()}.00</span>
+            </div>
           </div>
+          </div>
+          </div>
+          {/* Bottom edge with semicircle cutout */}
+          <svg width="326" height="32" viewBox="0 0 326 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', marginTop: '-1px' }}>
+            <defs>
+              <linearGradient id="receiptBottomGrad" x1="163" y1="0" x2="163" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#49A86E"/>
+                <stop offset="1" stopColor="#61D690"/>
+              </linearGradient>
+            </defs>
+            {/* Gradient border bottom with ellipse notch - outer (Figma bezier scaled to 326px) */}
+            <path d="M0 0H326V26C326 29.314 323.314 32 320 32H189C189 15 177 1 163 1C149 1 137 15 137 32H6C2.686 32 0 29.314 0 26V0Z" fill="url(#receiptBottomGrad)"/>
+            {/* White inner fill - inset 1.5px around the ellipse curve */}
+            <path d="M1.5 0H324.5V25.5C324.5 28.538 322.038 30.5 319 30.5H187.5C187.5 16.3 176 2.5 163 2.5C150 2.5 138.5 16.3 138.5 30.5H7C3.962 30.5 1.5 28.538 1.5 25.5V0Z" fill="white"/>
+          </svg>
         </div>
         <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
           <SecondaryButton onClick={onShowShare}>Share Confirmation</SecondaryButton>
-          <TextLink onClick={() => {}}>Download Receipt (PDF)</TextLink>
+
         </div>
       </div>
     </div>
@@ -1386,7 +1639,7 @@ const SuccessWithShareScreen = ({ onClose }) => {
     <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <div style={{ padding: '30px 32px 120px', textAlign: 'center' }}>
         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}><HouseWithCheck /></div>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>Payment submitted to {requestData.titleCompany}!</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 12px' }}>Your payment is on its way</p>
         <DeliveryBanner date={requestData.deliveryDate} time={requestData.deliveryTime} />
       </div>
       {/* Share Modal */}
@@ -1420,7 +1673,7 @@ const ReviewWireScreen = ({ onNext, onBack, customLogo }) => {
   return (
     <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
       <CoBrandedHeader mode="progress" progress={30} onBack={onBack} customLogo={customLogo} />
-      <div style={{ padding: '75px 32px 120px' }}>
+      <div style={{ padding: '91px 32px 120px' }}>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Review Wire Instructions</p>
         <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
           Review and acknowledge the verified wire instructions for sending your funds to the...
@@ -1535,12 +1788,112 @@ const ReviewWireScreen = ({ onNext, onBack, customLogo }) => {
 };
 
 // ============================================
+// SCREEN: Money Protection Plan
+// ============================================
+const MoneyProtectionPlanScreen = ({ onAccept, onDecline, onBack, customLogo }) => (
+  <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+    <CoBrandedHeader mode="progress" progress={49} onBack={onBack} customLogo={customLogo} />
+    <div style={{ padding: '91px 32px 120px' }}>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.highEmphasis, margin: '0 0 16px' }}>Money Protection Plan</p>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 24px' }}>
+        CertifID's Money Protection Plan adds an extra layer of support to help protect your funds if something goes wrong.
+      </p>
+
+      {/* Plan Benefits Header */}
+      <div style={{
+        background: '#102754', borderRadius: '6px 6px 0 0', height: '48px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14.4px', color: colors.white }}>Plan Benefits</span>
+      </div>
+
+      {/* Plan Benefits Card */}
+      <div style={{
+        border: `1px solid ${colors.darkGrey}`, borderTop: 'none', borderRadius: '0 0 6px 6px',
+        padding: '16px', background: colors.white,
+      }}>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.highEmphasis, margin: '0 0 8px' }}>Funds recovery assistance</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 12px' }}>
+          If funds are sent to a fraudulent account, CertifID's fraud recovery experts will support you by:
+        </p>
+        {[
+          'Working with your bank to initiate recovery',
+          'Coordinating with law enforcement',
+          'Providing updates and guidance throughout the recovery process',
+        ].map((item, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+            <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.mediumEmphasis, flexShrink: 0 }}>&#10003;</span>
+            <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.highEmphasis, lineHeight: 1.5 }}>{item}</span>
+          </div>
+        ))}
+
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.highEmphasis, margin: '16px 0 8px' }}>CertifID's dedicated support</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: '#333333', margin: '0 0 0' }}>
+          Sending wire transfers can be complicated, if you have questions, the CertifID team of experts are just a phone call, email or chat away.
+        </p>
+
+        <div style={{ height: '1px', background: colors.darkGrey, margin: '16px 0' }} />
+
+        {/* Protection / Price Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14.4px', color: colors.mediumEmphasis, margin: '0 0 4px' }}>Protection:</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.mediumEmphasis, margin: 0 }}>Up to $50,000</p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14.4px', color: colors.mediumEmphasis, margin: '0 0 4px' }}>Price:</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '20px', color: colors.blue, margin: 0 }}>$20</p>
+          </div>
+        </div>
+
+        {/* Adjust transfer amount dropdown */}
+        <div style={{
+          marginTop: '16px', height: '40px', borderRadius: '6px', border: `1px solid ${colors.darkGrey}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px',
+          background: colors.white, boxSizing: 'border-box', cursor: 'pointer',
+        }}>
+          <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.mediumEmphasis }}>Adjust your transfer amount</span>
+          <span style={{ fontFamily: fonts.oxygen, fontSize: '14px', color: colors.mediumEmphasis }}>&#9662;</span>
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div style={{ marginTop: '24px' }}>
+        <PrimaryButton onClick={onAccept}>Yes, protect my money for $20</PrimaryButton>
+        <div style={{ marginTop: '12px' }}>
+          <button onClick={onDecline} style={{
+            width: '100%', height: '48px', padding: '10px 16px', borderRadius: '6px',
+            border: `1px solid ${colors.darkGrey}`, background: colors.white,
+            color: colors.mediumEmphasis, fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px',
+            lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxSizing: 'border-box',
+          }}>
+            No, I don't want additional protection
+          </button>
+        </div>
+      </div>
+
+      <div style={{ height: '1px', background: colors.darkGrey, margin: '24px 0' }} />
+
+      {/* Legal text */}
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '12px', lineHeight: 1.5, color: colors.lowEmphasis, margin: 0 }}>
+        This Money Protection Plan is brought to you by CertifID Insurance Services LLC in connection with Stateside Underwriting Agency. For more details on the Money Protection Plan please visit:{' '}
+        <span style={{ color: colors.blue, textDecoration: 'underline', cursor: 'pointer' }}>https://certifid.com/money-protection-plan/</span>
+      </p>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '12px', lineHeight: 1.5, color: colors.lowEmphasis, margin: '12px 0 0' }}>
+        You acknowledge that you are at least 18 years of age. You acknowledge that you are sending funds electronically to a third party in connection with a lawful transaction located within the United States.
+      </p>
+    </div>
+  </div>
+);
+
+// ============================================
 // SCREEN: Wire Protection Payment
 // ============================================
 const WireProtectionPaymentScreen = ({ onNext, onBack, customLogo }) => (
   <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
     <CoBrandedHeader mode="progress" progress={45} onBack={onBack} customLogo={customLogo} />
-    <div style={{ padding: '75px 32px 120px' }}>
+    <div style={{ padding: '91px 32px 120px' }}>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '24px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Complete payment</p>
       <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '15px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
         Please enter your card details.
@@ -1573,46 +1926,188 @@ const WireProtectionPaymentScreen = ({ onNext, onBack, customLogo }) => (
 );
 
 // ============================================
-// SCREEN: Wire Instructions
+// SCREEN: Continue to Instructions
 // ============================================
-const WireInstructionsScreen = ({ onBack, onGoDigital, customLogo }) => (
+const ContinueToInstructionsScreen = ({ onContinue, customLogo }) => (
   <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
-    <CoBrandedHeader mode="progress" progress={100} onBack={onBack} customLogo={customLogo} />
-    <div style={{ padding: '75px 32px 120px' }}>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.darkBlue, margin: '0 0 8px' }}>Wire Transfer Instructions</p>
-      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
-        Use these verified instructions to send your wire transfer.
+    <CoBrandedHeader mode="progress" progress={100} customLogo={customLogo} />
+    <div style={{ padding: '91px 32px 120px' }}>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 16px' }}>Your verified instructions are ready</p>
+      <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 24px' }}>
+        By continuing, you agree to use only these verified instructions for your wire transfer.
       </p>
+
+      <PrimaryButton onClick={onContinue}>Continue to instructions</PrimaryButton>
+
+      {/* Money Protection Plan confirmation card */}
       <div style={{
-        background: colors.lightOrange, borderRadius: '8px', padding: '16px', marginBottom: '24px',
-        display: 'flex', alignItems: 'flex-start', gap: '12px', border: '1px solid #fde68a',
+        marginTop: '24px', background: colors.lightestGrey, borderRadius: '6px', padding: '16px',
+        display: 'flex', gap: '12px', alignItems: 'flex-start',
       }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-          <path d="M12 9V13M12 17H12.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#D97706" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '14px', color: '#92400E', margin: 0, flex: 1 }}>
-          <strong>Verify before sending!</strong> Only use wire instructions from this secure page or by calling {requestData.titleCompany} directly.
-        </p>
+        <div style={{
+          width: '36px', height: '36px', borderRadius: '50%', background: '#102754',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <span style={{ color: colors.white, fontSize: '16px', fontWeight: 700 }}>$</span>
+        </div>
+        <div>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 6px', textTransform: 'uppercase' }}>Money Protection Plan</p>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: 0 }}>
+            Thank you for purchasing CertifID's Money Protection Plan. Please check your email for more details.
+          </p>
+        </div>
       </div>
-      <div style={{ background: colors.lightestGrey, borderRadius: '8px', padding: '20px', marginBottom: '24px' }}>
-        {[
-          { label: 'Bank Name', value: 'First National Bank' },
-          { label: 'Routing Number', value: '111000025' },
-          { label: 'Account Number', value: '1234567890' },
-          { label: 'Account Name', value: 'Pinpoint Title Escrow' },
-          { label: 'Reference', value: requestData.propertyAddress },
-        ].map((item, i) => (
-          <div key={i} style={{ marginBottom: i < 4 ? '16px' : 0 }}>
-            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '12px', color: colors.mediumEmphasis, margin: 0 }}>{item.label}</p>
-            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.highEmphasis, margin: '4px 0 0' }}>{item.value}</p>
-          </div>
-        ))}
+
+      {/* Success toast */}
+      <div style={{
+        marginTop: '24px', background: '#1A7A4C', borderRadius: '6px', padding: '14px 16px',
+        display: 'flex', alignItems: 'center', gap: '10px',
+      }}>
+        <div style={{
+          width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255,255,255,0.25)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <span style={{ color: colors.white, fontSize: '14px', fontWeight: 700 }}>&#10003;</span>
+        </div>
+        <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.white }}>Payment successfully processed</span>
       </div>
-      <PrimaryButton onClick={() => {}}>Download Instructions (PDF)</PrimaryButton>
-      {onGoDigital && <TextLink onClick={onGoDigital}>Go back and pay digitally instead</TextLink>}
     </div>
   </div>
 );
+
+// ============================================
+// SCREEN: Wire Instructions
+// ============================================
+const WireInstructionsScreen = ({ onBack, onGoDigital, customLogo }) => {
+  const [showWireInfo, setShowWireInfo] = useState(true);
+
+  return (
+    <div className="phone-scroll" style={{ paddingTop: '66px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+      <CoBrandedHeader mode="progress" progress={100} onBack={onBack} customLogo={customLogo} />
+      <div style={{ padding: '91px 32px 120px' }}>
+
+        {/* Shield/checkmark illustration */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <div style={{
+            width: '72px', height: '72px', borderRadius: '50%', background: '#E8F4FD',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill={colors.blue} />
+              <path d="M9 12l2 2 4-4" stroke={colors.white} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </div>
+
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '26px', lineHeight: 1.3, color: colors.highEmphasis, margin: '0 0 12px', textAlign: 'center' }}>Your wire instructions</p>
+        <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 24px' }}>
+          Please download <strong>the wire instructions packet</strong> for full details on how to complete your transaction. {requestData.titleCompany} will provide you with the final transfer amount.
+        </p>
+
+        {/* Wire Instructions Packet download */}
+        <div style={{
+          border: `1px solid ${colors.darkGrey}`, borderRadius: '6px', height: '48px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px',
+          background: colors.white, cursor: 'pointer', marginBottom: '16px', boxSizing: 'border-box',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '18px' }}>&#128196;</span>
+            <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.highEmphasis }}>Wire Instructions Packet</span>
+          </div>
+          <span style={{ fontSize: '16px', color: colors.mediumEmphasis }}>&#11015;&#65039;</span>
+        </div>
+
+        {/* Show/Hide wire information toggle */}
+        <button onClick={() => setShowWireInfo(!showWireInfo)} style={{
+          width: '100%', height: '48px', borderRadius: showWireInfo ? '6px 6px 0 0' : '6px',
+          border: 'none', background: colors.blue, color: colors.white,
+          fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+          boxSizing: 'border-box',
+        }}>
+          {showWireInfo ? 'Hide wire information' : 'Show wire information'}
+          <span style={{ fontSize: '12px' }}>{showWireInfo ? '\u25B2' : '\u25BC'}</span>
+        </button>
+
+        {/* Wire details card */}
+        {showWireInfo && (
+          <div style={{
+            border: `1px solid ${colors.darkGrey}`, borderTop: 'none', borderRadius: '0 0 6px 6px',
+            padding: '16px', background: colors.white,
+          }}>
+            {/* CREDIT TO */}
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.blue, margin: '0 0 8px', textTransform: 'uppercase' }}>Credit To</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.highEmphasis, margin: '0 0 8px' }}>Justine Case</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.highEmphasis }}>Account number</span>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.highEmphasis }}>1242293892</span>
+            </div>
+
+            <div style={{ height: '1px', background: colors.darkGrey, margin: '0 0 16px' }} />
+
+            {/* BENEFICIARY BANK */}
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.blue, margin: '0 0 8px', textTransform: 'uppercase' }}>Beneficiary Bank</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.highEmphasis, margin: '0 0 2px' }}>Bank of America, Inc.</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.highEmphasis, margin: '0 0 2px' }}>1000 Louisiana St</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', color: colors.highEmphasis, margin: '0 0 12px' }}>Houston, TX 77002</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.highEmphasis }}>Routing number</span>
+              <span style={{ fontFamily: fonts.oxygen, fontSize: '16px', color: colors.highEmphasis }}>122101706</span>
+            </div>
+
+            {/* Red warning box */}
+            <div style={{
+              border: '2px solid #D32F2F', borderRadius: '6px', padding: '12px',
+              background: colors.white,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <span style={{ fontSize: '16px' }}>&#9888;&#65039;</span>
+                <span style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: '#D32F2F', textTransform: 'uppercase' }}>These instructions never change</span>
+              </div>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.highEmphasis, margin: '0 0 8px' }}>
+                If you receive a message with new or revised instructions please call:
+              </p>
+              <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '16px', color: colors.blue, margin: 0, cursor: 'pointer' }}>
+                {requestData.titleCompany} - (512) 113-7575
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* PLEASE NOTE section */}
+        <div style={{ marginTop: '24px' }}>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 8px', textTransform: 'uppercase' }}>Please Note</p>
+          <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 24px' }}>
+            If you have any questions regarding your wire transfer please contact: {requestData.titleCompany}
+          </p>
+        </div>
+
+        {/* MONEY PROTECTION PLAN section */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+          <div style={{
+            width: '28px', height: '28px', borderRadius: '50%', background: colors.darkGreen,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px',
+          }}>
+            <span style={{ color: colors.white, fontSize: '14px', fontWeight: 700 }}>&#10003;</span>
+          </div>
+          <div>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 700, fontSize: '14px', color: colors.highEmphasis, margin: '0 0 8px', textTransform: 'uppercase' }}>Money Protection Plan</p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: '0 0 12px' }}>
+              Your purchase of CertifID's Money Protection Plan insures your funds up to $500,000 when you follow these instructions to transfer money. You also have access to Fraud Recovery Services should you transfer funds to a different account.
+            </p>
+            <p style={{ fontFamily: fonts.oxygen, fontWeight: 400, fontSize: '16px', lineHeight: 1.5, color: colors.mediumEmphasis, margin: 0 }}>
+              If you suspect you might be a victim of fraud, contact{' '}
+              <span style={{ color: colors.blue, cursor: 'pointer' }}>recovery@certifid.com</span>{' '}
+              or call (616) 202-6612 as soon as possible.
+            </p>
+          </div>
+        </div>
+
+        {onGoDigital && <TextLink onClick={onGoDigital}>Go back and pay digitally instead</TextLink>}
+      </div>
+    </div>
+  );
+};
 
 // ============================================
 // Main App Component
@@ -1637,8 +2132,12 @@ const screenSlugs = {
   'success': '/confirmation',
   'success-share': '/share-modal',
   'wire-review': '/review-wire',
+  'wire-mpp': '/money-protection-plan',
   'wire-protection-pay': '/protection-payment',
+  'wire-continue': '/continue-to-instructions',
   'wire': '/wire-instructions',
+  'plaid-modal': '/plaid-connect',
+  'bank-select-new': '/bank-select-new',
   'err-plaid': '/plaid-failed',
   'err-savings': '/savings-account',
   'err-closing': '/closing-too-soon',
@@ -1706,6 +2205,8 @@ const CashToClosePrototype = () => {
       { id: 'kyc', label: 'KYC (New)', note: 'New users only' },
       { id: 'kyc-verifying', label: 'KYC Verifying', note: 'New users only' },
       { id: 'plaid', label: 'Bank via Plaid', note: 'New users only' },
+      { id: 'plaid-modal', label: 'Plaid Connect' },
+      { id: 'bank-select-new', label: 'Bank Select (New)', note: 'New users only' },
       { id: 'bank-select', label: 'Bank Select', note: 'Returning users' },
       { id: 'eligibility', label: 'Eligibility Check' },
       { id: 'cutoff', label: '3pm Cutoff Alert' },
@@ -1718,7 +2219,9 @@ const CashToClosePrototype = () => {
     ],
     'Wire': [
       { id: 'wire-review', label: 'Review Wire' },
+      { id: 'wire-mpp', label: 'Money Protection Plan' },
       { id: 'wire-protection-pay', label: 'Protection Payment' },
+      { id: 'wire-continue', label: 'Continue to Instructions' },
       { id: 'wire', label: 'Wire Instructions' },
     ],
     'Errors': [
@@ -1750,8 +2253,10 @@ const CashToClosePrototype = () => {
       />;
       case 'kyc': return <KYCScreen onNext={() => setCurrentScreen('kyc-verifying')} onBack={() => setCurrentScreen('method')} customLogo={cl} />;
       case 'kyc-verifying': return <KYCVerifyingScreen onNext={() => setCurrentScreen('plaid')} customLogo={cl} />;
-      case 'plaid': return <PlaidBankConnectionScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('kyc')} customLogo={cl} />;
-      case 'bank-select': return <BankAccountScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('method')} useExisting={useExistingBank} setUseExisting={setUseExistingBank} customLogo={cl} />;
+      case 'plaid': return <PlaidBankConnectionScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('kyc')} onPlaidConnect={() => setCurrentScreen('plaid-modal')} customLogo={cl} />;
+      case 'plaid-modal': return <PlaidModalScreen onNext={() => setCurrentScreen('bank-select')} onBack={() => setCurrentScreen('plaid')} customLogo={cl} />;
+      case 'bank-select-new': return <BankAccountScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('plaid-modal')} showPreviousLabel={false} useExisting={useExistingBank} setUseExisting={setUseExistingBank} onPlaidConnect={() => setCurrentScreen('plaid-modal')} customLogo={cl} />;
+      case 'bank-select': return <BankAccountScreen onNext={() => setCurrentScreen('eligibility')} onBack={() => setCurrentScreen('method')} useExisting={useExistingBank} setUseExisting={setUseExistingBank} onPlaidConnect={() => setCurrentScreen('plaid-modal')} customLogo={cl} />;
       case 'eligibility': return <EligibilityCheckScreen onNext={() => setCurrentScreen('review')} customLogo={cl} />;
       case 'cutoff': return <CutoffAlertScreen onAccept={() => setCurrentScreen('review')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('review')} customLogo={cl} />;
       case 'review': return <ReviewPaymentScreen onNext={() => setCurrentScreen('processing')} onBack={() => setCurrentScreen(userType === 'new' ? 'plaid' : 'bank-select')} checkboxChecked={checkboxChecked} setCheckboxChecked={setCheckboxChecked} customLogo={cl} />;
@@ -1759,13 +2264,17 @@ const CashToClosePrototype = () => {
       case 'success': return <SuccessScreen onShowShare={() => setCurrentScreen('success-share')} customLogo={cl} />;
       case 'success-share': return <SuccessWithShareScreen onClose={() => setCurrentScreen('success')} customLogo={cl} />;
       case 'wire-review': return <ReviewWireScreen
-        onNext={(hasProtection) => {
-          if (hasProtection) setCurrentScreen('wire-protection-pay');
-          else setCurrentScreen('wire');
-        }}
+        onNext={() => setCurrentScreen('wire-mpp')}
         onBack={() => setCurrentScreen('method')} customLogo={cl}
       />;
-      case 'wire-protection-pay': return <WireProtectionPaymentScreen onNext={() => setCurrentScreen('wire')} onBack={() => setCurrentScreen('wire-review')} customLogo={cl} />;
+      case 'wire-mpp': return <MoneyProtectionPlanScreen
+        onAccept={() => setCurrentScreen('wire-protection-pay')}
+        onDecline={() => setCurrentScreen('wire')}
+        onBack={() => setCurrentScreen('wire-review')}
+        customLogo={cl}
+      />;
+      case 'wire-protection-pay': return <WireProtectionPaymentScreen onNext={() => setCurrentScreen('wire-continue')} onBack={() => setCurrentScreen('wire-mpp')} customLogo={cl} />;
+      case 'wire-continue': return <ContinueToInstructionsScreen onContinue={() => setCurrentScreen('wire')} customLogo={cl} />;
       case 'wire': return <WireInstructionsScreen onBack={() => setCurrentScreen('wire-review')} onGoDigital={() => setCurrentScreen('method')} customLogo={cl} />;
       case 'err-plaid': return <PlaidFailedScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('kyc')} customLogo={cl} />;
       case 'err-savings': return <SavingsAccountScreen onRetry={() => setCurrentScreen('plaid')} onWire={() => setCurrentScreen('wire-review')} onBack={() => setCurrentScreen('plaid')} customLogo={cl} />;
